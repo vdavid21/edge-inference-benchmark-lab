@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+venvs/
+.venv/
+venv/
+*.egg-info/
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# TensorRT and ModelOpt intermediates
+*.cache
+*.timing
+models/*.plan
+models/*_opset*.onnx
+models/*_named.onnx
+models/mobilenetv2-12.onnx
+results/**/times_*.json
+results/bench_*.log
+data/*
+# the split file must be committed despite data/ being ignored
+!data/split_v1.json

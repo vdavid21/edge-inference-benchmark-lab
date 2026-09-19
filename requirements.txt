@@ -1,0 +1,75 @@
+# Direct Python dependencies for the Edge Inference Benchmark Lab.
+#
+# Hand-maintained: only packages this project imports or installs deliberately.
+# Transitive dependencies are not listed here — see requirements-freeze.txt for
+# the exact resolved environment that produced the published numbers.
+#
+#   pip install -r requirements.txt
+#
+# Versions in comments are the known-good ones on JetPack 7.2.1 / Python 3.12.
+# They are not pinned here because this file documents what the project needs;
+# the freeze file documents what it ran with.
+
+
+# --- IMPORTANT: create the venv with --system-site-packages -------------------
+#
+#     python3 -m venv --system-site-packages ~/venvs/eibl
+#
+# TensorRT and CUDA are installed system-wide by JetPack (apt), NOT by pip.
+# An isolated venv cannot see them and `import tensorrt` will fail. There is no
+# working `pip install tensorrt` on Jetson — do not try it.
+#
+# Provided by apt via the `nvidia-jetpack` metapackage, deliberately absent here:
+#   tensorrt            10.16.2.10   (python3-libnvinfer)
+#   cuda toolkit        13.2.86
+#   cudnn                9.20.0.46
+#   trtexec                          (/usr/src/tensorrt/bin/trtexec)
+#
+# See docs/env/ for full captured system state per session.
+
+
+# --- core --------------------------------------------------------------------
+
+numpy                 # 2.5.3   — arrays throughout
+pillow                # 12.x    — image decode/resize in framecost.preprocess
+                      #           PIL specifically, not OpenCV: the two produce
+                      #           different pixels for the same resize, and the
+                      #           reference accuracy numbers come from the PIL path
+
+
+# --- ONNX toolchain ----------------------------------------------------------
+
+onnx                  # 1.22.0  — graph loading and node inspection
+onnxruntime           # 1.29.0  — CPU reference backend for the accuracy baseline
+                      #           and the calibration execution provider.
+                      #           NOT onnxruntime-gpu: no prebuilt sm_87 wheel
+                      #           exists for JetPack 7 / CUDA 13, and this is
+                      #           only used as an independent reference anyway.
+polygraphy            # graph inspection and TRT-vs-ORT numerical comparison
+
+
+# --- CUDA / TensorRT runtime -------------------------------------------------
+
+cuda-python           # device memory allocation and streams in
+                      # framecost.trt_runner. Bindings only — bundles no CUDA
+                      # libraries, so it cannot shadow JetPack's.
+
+
+# --- INT8 post-training quantisation -----------------------------------------
+
+nvidia-modelopt       # 0.46.0  — explicit Q/DQ insertion and PTQ calibration.
+                      #           Replaces the deprecated pytorch-quantization.
+onnx-graphsurgeon     # 0.6.1   — required by modelopt.onnx.quantization
+onnxslim              # 0.1.96  — required by modelopt.onnx.quantization
+
+# ModelOpt's ONNX path imports torch in qdq_utils.py, so torch is mandatory even
+# though no GPU tensor work happens. Install the CPU-only wheel explicitly:
+#
+#     pip install torch --index-url https://download.pytorch.org/whl/cpu
+#
+# Do NOT use the default PyPI aarch64 wheel. It bundles its own CUDA 13.0 and
+# cuDNN 9.24 (~3 GB) which shadow JetPack's 13.2 / 9.20 at import time, making
+# "which cuDNN did TensorRT actually load" unanswerable. It is also built
+# without sm_87 kernels — torch.cuda.is_available() returns True while real
+# kernels fail. The CPU wheel bundles no CUDA at all, which is the point.
+torch                 # 2.14.0+cpu
