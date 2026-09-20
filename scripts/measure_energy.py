@@ -74,7 +74,8 @@ def main() -> None:
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     env = capture(ROOT)
     sha = env["git"]["sha_short"] or "nogit"
-    run_dir = Path(args.out) if args.out else ROOT / "results" / "energy" / f"{ts}_{sha}"
+    tag = f"{engine.stem}_{env['power_mode']['name']}_{'pinned' if env['clocks']['gpu_pinned'] else 'dvfs'}"
+    run_dir = Path(args.out) if args.out else ROOT / "results" / "energy" / f"{ts}_{tag}_{sha}"
     run_dir.mkdir(parents=True, exist_ok=True)
 
     for w in warn_if_unsuitable(env):
