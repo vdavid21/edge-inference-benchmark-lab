@@ -2,7 +2,7 @@
 
 ## Objective
 
-This test run measures the inference performance of the MobileNetV2 model at FP32, TF32, and FP16 precision, both with and without CUDA Graph.
+This test run measures the inference performance of the MobileNetV2 model at FP32, TF32, and FP16 precision, both with and without CUDA Graph, plus one TF32 run with `--useSpinWait` on top of CUDA Graph.
 
 ## Metrics of interest
 
@@ -215,5 +215,23 @@ trtexec --loadEngine=mobilenetv2_tf32.plan \
 | Enqueue median (ms) | 0.025391 | 0.009766 | 0.009766 | 2.600x |
 | Enqueue / compute ratio | 0.0146 | 0.0076 | 0.0130 | 1.123x |
 | Speedup vs. FP32 | 1.000x | 1.356x | 2.316x | 2.316x |
+
+### With CUDA Graph and `--useSpinWait`
+
+Only TF32 was run in this configuration, so the comparison is against the TF32 CUDA Graph column above. Unlike the columns in the two tables above, the ratio here is a raw quotient of spinWait over graph, so values below 1.000x mean spinWait is lower.
+
+| Metric | TF32 graph | TF32 graph + spinWait | spinWait / graph |
+| --- | ---: | ---: | ---: |
+| Throughput (qps) | 777.122 | 777.626 | 1.001x |
+| Median latency (ms) | 1.33203 | 1.32520 | 0.995x |
+| Latency p99 (ms) | 1.34082 | 1.33398 | 0.995x |
+| GPU compute median (ms) | 1.28320 | 1.28320 | 1.000x |
+| Enqueue median (ms) | 0.009766 | 0.006348 | 0.650x |
+| Enqueue / compute ratio | 0.0076 | 0.0049 | 0.645x |
+
+Note:
+
+- `--useSpinWait` changes only how the host waits for completion, so GPU compute median is bit-identical between the two runs. The 35% cut in enqueue median is real but recovers about 3.4 µs per query against a 1.28 ms kernel.
+- The end-to-end effect is within run-to-run noise: 0.5% on median latency and 0.06% on throughput. CUDA Graph has already removed the launch overhead that spinWait would otherwise help with.
 
 ---

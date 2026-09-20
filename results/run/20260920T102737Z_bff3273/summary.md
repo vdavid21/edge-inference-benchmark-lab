@@ -14,7 +14,8 @@ This benchmark measures the inference accuracy and performance of the MobileNetV
 - GPU compute median
 - Enqueue median
 - Enqueue / compute ratio
-- Speedup vs. FP32
+- Throughput speedup vs. FP32
+- Latency speedup vs. FP32
 
 ---
 
@@ -194,34 +195,37 @@ python scripts/eval_trt.py models/mobilenetv2_int8.plan
 
 ### Performance summary without CUDA Graph
 
-| Metric | FP32 | TF32 | FP16 | INT8 | FP16 / FP32 |
+| Metric | FP32 | TF32 | FP16 | INT8 | INT8 / FP32 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Throughput (qps) | 518.057 | 671.866 | 1047.750 | 1309.840 | 2.021x |
-| Median latency (ms) | 1.9805 | 1.5342 | 0.9902 | 0.8086 | 0.500x |
-| Latency p99 (ms) | 1.9895 | 1.5430 | 1.0061 | 0.8164 | 0.506x |
-| GPU compute median (ms) | 1.9277 | 1.4844 | 0.9439 | 0.7607 | 0.490x |
-| Enqueue median (ms) | 0.5459 | 0.5264 | 0.5830 | 0.5371 | 1.068x |
-| Enqueue / compute ratio | 0.2833 | 0.3545 | 0.6177 | 0.7060 | 2.182x |
-| Speedup vs. FP32 | 1.000x | 1.297x | 2.021x | 2.449x | — |
+| Throughput (qps) | 518.057 | 671.866 | 1047.750 | 1309.840 | 2.528x |
+| Median latency (ms) | 1.9805 | 1.5342 | 0.9902 | 0.8086 | 0.408x |
+| Latency p99 (ms) | 1.9895 | 1.5430 | 1.0061 | 0.8164 | 0.410x |
+| GPU compute median (ms) | 1.9277 | 1.4844 | 0.9439 | 0.7607 | 0.395x |
+| Enqueue median (ms) | 0.5459 | 0.5264 | 0.5830 | 0.5371 | 0.984x |
+| Enqueue / compute ratio | 0.2833 | 0.3545 | 0.6177 | 0.7060 | 2.493x |
+| Throughput speedup vs. FP32 | 1.000x | 1.297x | 2.022x | 2.528x | — |
+| Latency speedup vs. FP32 | 1.000x | 1.291x | 2.000x | 2.449x | — |
 
 ### Performance summary with CUDA Graph
 
 
-| Metric | FP32 | TF32 | FP16 | INT8 | FP16 / FP32 |
+| Metric | FP32 | TF32 | FP16 | INT8 | INT8 / FP32 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Throughput (qps) | 573.177 | 777.122 | 1327.200 | 1711.850 | 2.316x |
-| Median latency (ms) | 1.7930 | 1.3320 | 0.7949 | 0.6260 | 0.443x |
-| Latency p99 (ms) | 1.8027 | 1.3408 | 0.8123 | 0.6328 | 0.450x |
-| GPU compute median (ms) | 1.7402 | 1.2832 | 0.7490 | 0.5820 | 0.431x |
-| Enqueue median (ms) | 0.0254 | 0.0098 | 0.0098 | 0.0078 | 0.384x |
-| Enqueue / compute ratio | 0.0146 | 0.0076 | 0.0130 | 0.0134 | 0.890x |
-| Speedup vs. FP32 | 1.000x | 1.356x | 2.316x | 2.864x | — |
+| Throughput (qps) | 573.177 | 777.122 | 1327.200 | 1711.850 | 2.987x |
+| Median latency (ms) | 1.7930 | 1.3320 | 0.7949 | 0.6260 | 0.349x |
+| Latency p99 (ms) | 1.8027 | 1.3408 | 0.8123 | 0.6328 | 0.351x |
+| GPU compute median (ms) | 1.7402 | 1.2832 | 0.7490 | 0.5820 | 0.334x |
+| Enqueue median (ms) | 0.0254 | 0.0098 | 0.0098 | 0.0078 | 0.308x |
+| Enqueue / compute ratio | 0.0146 | 0.0076 | 0.0130 | 0.0134 | 0.920x |
+| Throughput speedup vs. FP32 | 1.000x | 1.356x | 2.316x | 2.987x | — |
+| Latency speedup vs. FP32 | 1.000x | 1.346x | 2.256x | 2.864x | — |
 
 ### Interpretation
 
 - FP16 remains effectively free from an accuracy perspective while significantly improving latency and throughput.
 - INT8 keeps high performance with a small accuracy loss, around 0.75 points of Top-1 on this dataset.
 - CUDA Graph reduces the host-side overhead substantially in the INT8 run, improving the median latency from about 0.809 ms to about 0.626 ms.
+- Throughput speedup exceeds latency speedup, and the gap widens as the kernels get shorter: trtexec overlaps the H2D and D2H copies with compute across iterations, so the roughly 0.04 ms of transfer per query is hidden. That overhead is a larger share of a 0.58 ms INT8 kernel than of a 1.74 ms FP32 one, which is why INT8 reaches 2.987x on throughput but 2.864x on median latency, while TF32 shows almost no divergence (1.356x vs 1.346x).
 - The current run confirms the expected pattern: the INT8 graph-enabled configuration is the fastest measured variant in this benchmark set.
 
 ---

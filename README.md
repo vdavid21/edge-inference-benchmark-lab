@@ -15,9 +15,9 @@ Same model, same board, same measurement method. Batch 1, CUDA graphs enabled, c
 | Precision | Latency p50 | p99 | Throughput | Top-1 | Δ Top-1 | Engine | Activation mem |
 |---|---|---|---|---|---|---|---|
 | FP32 (`--noTF32`) | 1.793 ms | 1.803 ms | 573 qps | 58.61% | — | 14.40 MB | 7.02 MB |
-| TF32 | 1.332 ms | 1.341 ms | 777 qps | 58.57% | −0.04 | 14.35 MB | 7.02 MB |
-| FP16 | 0.795 ms | 0.812 ms | 1327 qps | 58.59% | −0.02 | 7.46 MB | 3.51 MB |
-| INT8 | 0.626 ms | 0.633 ms | 1712 qps | 57.83% | −0.78 | 5.65 MB | 1.83 MB |
+| TF32 | 1.332 ms | 1.341 ms | 777 qps | 58.57% | −0.04 | 14.34 MB | 7.02 MB |
+| FP16 | 0.795 ms | 0.812 ms | 1327 qps | 58.59% | −0.02 | 7.35 MB | 3.51 MB |
+| INT8 | 0.626 ms | 0.633 ms | 1712 qps | 57.83% | −0.78 | 5.68 MB | 1.83 MB |
 
 Accuracy is top-1 on 9000 ImageNetV2 images, 95% CI ±1.02%.
 
@@ -26,20 +26,22 @@ Accuracy is top-1 on 9000 ImageNetV2 images, 95% CI ±1.02%.
 | | FP32 | TF32 | FP16 | INT8 |
 |---|---|---|---|---|
 | Theoretical peak vs FP32 | 1× | 4× | 8× | 16× |
-| Measured speedup | 1.00× | 1.36× | 2.32× | 2.86× |
-| **Fraction realised** | — | **34%** | **29%** | **18%** |
+| Measured speedup | 1.00× | 1.36× | 2.32× | 2.99× |
+| **Fraction realised** | — | **34%** | **29%** | **19%** |
 
-Sixteen times the arithmetic throughput delivers 2.86× the inference rate, and the fraction realised *falls* as precision drops. MobileNetV2's depthwise convolutions sit far inside the memory-bound region of the roofline — the arithmetic was never the bottleneck.
+Measured speedup is throughput relative to FP32, in the same CUDA-graph configuration as the table above.
 
-Two checks rule out the easy explanations for INT8's modest 1.23× over FP16. Coverage is near-total (54 of 57 output tensors are INT8), and layout-conversion overhead is negligible (2 reformat layers versus FP16's 1). What remains is memory bandwidth and the fixed costs that don't scale with precision.
+Sixteen times the arithmetic throughput delivers 2.99× the inference rate, and the fraction realised *falls* as precision drops. MobileNetV2's depthwise convolutions sit far inside the memory-bound region of the roofline — the arithmetic was never the bottleneck.
+
+Two checks rule out the easy explanations for INT8's modest 1.29× over FP16. Coverage is near-total (54 of 57 output tensors are INT8), and layout-conversion overhead is negligible (2 reformat layers versus FP16's 1). What remains is memory bandwidth and the fixed costs that don't scale with precision.
 
 ## Other findings so far
 
-**FP32 is ambiguous and the ambiguity is worth 1.34×.** TensorRT enables TF32 on Ampere by default, so an unflagged "FP32" baseline is silently running reduced-precision math on Tensor Cores. Which baseline you pick moves your headline speedup by 34%.
+**FP32 is ambiguous and the ambiguity is worth 1.36×.** TensorRT enables TF32 on Ampere by default, so an unflagged "FP32" baseline is silently running reduced-precision math on Tensor Cores. Which baseline you pick moves your headline speedup by 36%.
 
-**CUDA Graphs are worth more than a precision step.** Collapsing 87 kernel launches into one submission gave 1.11× at FP32 rising to 1.28× at INT8 — and 20% of what `trtexec` reports as "GPU Compute Time" without graphs turns out to be launch bubbles between kernels, not computation.
+**CUDA Graphs are worth more than a precision step.** Collapsing the engine into a single submission gave 1.11× at FP32, rising to 1.31× at INT8 — more than the 1.29× that FP16→INT8 buys. And at FP16, 21% of what `trtexec` reports as "GPU Compute Time" without graphs turns out to be launch bubbles between kernels rather than computation; the same comparison gives 10% at FP32, 14% at TF32 and 23% at INT8, so the effect grows as the kernels get shorter.
 
-**Pinning clocks mostly helps the CPU.** `jetson_clocks` improved GPU compute by 3.9% but cut kernel-launch (enqueue) time by 40%, because the frequency governor handles bursty submission work badly.
+**Spin-wait is a host-side knob only.** Adding `--useSpinWait` on top of CUDA graphs (measured at TF32) cut enqueue median 35%, from 9.8 µs to 6.3 µs, while GPU compute median stayed bit-identical at 1.283 ms. End to end it moved p50 by 0.5% and throughput by 0.06% — once graphs have removed the launch overhead, there is nothing left for it to recover.
 
 **Precision changes which algorithm gets selected.** At FP16, TensorRT uses GEMM kernels for 18 of the 1×1 pointwise convolutions. At INT8 it uses direct convolution for all 52 — the autotuner abandoned the GEMM formulation entirely.
 
@@ -101,7 +103,7 @@ the question requires, but don't compare these absolute numbers to a paper.
 
 **The INT8 accuracy drop is not yet statistically established.** 0.78 points sits inside the ±1.02% confidence interval. Because both arms use identical images, a paired test (McNemar's) is the right instrument and hasn't been run yet.
 
-**Isolated inference latency, not pipeline latency.** In a Python evaluation loop dominated by JPEG decode and preprocessing, the 2.32× FP16 speedup showed up as roughly 9% end to end.
+**Isolated inference latency, not pipeline latency.** In a Python evaluation loop dominated by JPEG decode and preprocessing, the 2.32× FP16 speedup showed up as 8% end to end — 109 s to 101 s over the same 9000 images.
 
 **One board, one unit.** Nothing here establishes part-to-part variation.
 
@@ -112,6 +114,8 @@ the question requires, but don't compare these absolute numbers to a paper.
 
 - Energy per inference (mJ/frame) and the 7 W / 15 W / 25 W power sweep
 - Sustained thermal behaviour and throttling
+- The effect of `jetson_clocks` on compute and enqueue time — every run here was made with clocks already pinned, so there is no unpinned baseline to compare against
+- Kernel-level tracing: launch counts per engine and direct attribution of the launch gaps
 - Per-layer profiling and the roofline scatter plot
 - Calibration method and calibration-set-size sweep
 - McNemar's paired significance test
