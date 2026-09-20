@@ -24,3 +24,4 @@ results/bench_*.log
 data/*
 # the split file must be committed despite data/ being ignored
 !data/split_v1.json
+docs/notes
