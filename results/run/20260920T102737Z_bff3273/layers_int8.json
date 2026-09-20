@@ -1,0 +1,2395 @@
+{"Layers": [{
+  "Name": "input_QuantizeLinear",
+  "LayerType": "Reformat",
+  "Inputs": [
+  {
+    "Name": "input",
+    "Location": "Device",
+    "Dimensions": [1,3,224,224],
+    "Format/Datatype": "Row major linear FP32"
+  }],
+  "Outputs": [
+  {
+    "Name": "input_cast_to_fp16",
+    "Location": "Device",
+    "Dimensions": [1,3,224,224],
+    "Format/Datatype": "Four wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Reformat",
+  "Origin": "QDQ",
+  "TacticValue": "0x0000000000000000",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: input_QuantizeLinear]"
+},{
+  "Name": "input_cast_to_fp16",
+  "LayerType": "NoOp",
+  "Inputs": [
+  {
+    "Name": "input_cast_to_fp16",
+    "Location": "Device",
+    "Dimensions": [1,3,224,224],
+    "Format/Datatype": "Four wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "input_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,3,224,224],
+    "Format/Datatype": "Four wide channel vectorized row major Int8 format"
+  }],
+  "TacticValue": "0x0000000000000000",
+  "StreamId": 0,
+  "Metadata": ""
+},{
+  "Name": "475 + 475_QuantizeLinear + Conv_0 + Clip_1",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "input_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,3,224,224],
+    "Format/Datatype": "Four wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "317_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [2,2],
+  "Dilation": [1,1],
+  "OutMaps": 32,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 864},
+  "Bias": {"Type": "Float", "Count": 32},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_first_layer_i8i8_i8i32_f32_nchw_vect_c_4kcrs_vect_c_4_nchw_vect_c_32_tilesize16x16x32x32_stage1_warpsize4x1x1_tensor16x8x16_r3s3_u2v2_aligna4_alignc8",
+  "TacticValue": "0x3d988d07a78b0918",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 475_QuantizeLinear]\u001e[ONNX Layer: Conv_0]\u001e[ONNX Layer: Clip_1]\u001e[ONNX Layer: 317_QuantizeLinear]\u001e[ONNX Layer: input_DequantizeLinear]\u001e[ONNX Layer: 475_DequantizeLinear]"
+},{
+  "Name": "478 + 478_QuantizeLinear + Conv_2 + Clip_3",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "317_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "320_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 32,
+  "Groups": 32,
+  "Weights": {"Type": "Int8", "Count": 288},
+  "Bias": {"Type": "Float", "Count": 32},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize128_ThrdOuterLoop2_CVecSplit4",
+  "TacticValue": "0x9e8b774fcf76d042",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 478_QuantizeLinear]\u001e[ONNX Layer: Conv_2]\u001e[ONNX Layer: Clip_3]\u001e[ONNX Layer: 320_QuantizeLinear]\u001e[ONNX Layer: 317_DequantizeLinear]\u001e[ONNX Layer: 478_DequantizeLinear]"
+},{
+  "Name": "481 + 481_QuantizeLinear + Conv_4",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "320_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "480_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,16,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 16,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 512},
+  "Bias": {"Type": "Float", "Count": 16},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm75_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x32x64_stage1_warpsize2x1x1_g1_tensor8x8x16_simple_t1r1s1",
+  "TacticValue": "0x235fad4a7171cb36",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 481_QuantizeLinear]\u001e[ONNX Layer: Conv_4]\u001e[ONNX Layer: 480_QuantizeLinear]\u001e[ONNX Layer: 320_DequantizeLinear]\u001e[ONNX Layer: 481_DequantizeLinear]"
+},{
+  "Name": "484 + 484_QuantizeLinear + Conv_5 + Clip_6",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "480_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,16,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "325_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 96,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 1536},
+  "Bias": {"Type": "Float", "Count": 96},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize128x96x64_stage3_warpsize4x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x429236a031bfe3e7",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 484_QuantizeLinear]\u001e[ONNX Layer: Conv_5]\u001e[ONNX Layer: Clip_6]\u001e[ONNX Layer: 325_QuantizeLinear]\u001e[ONNX Layer: 480_DequantizeLinear]\u001e[ONNX Layer: 484_DequantizeLinear]"
+},{
+  "Name": "487 + 487_QuantizeLinear + Conv_7 + Clip_8",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "325_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,112,112],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "328_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [2,2],
+  "Dilation": [1,1],
+  "OutMaps": 96,
+  "Groups": 96,
+  "Weights": {"Type": "Int8", "Count": 864},
+  "Bias": {"Type": "Float", "Count": 96},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U2_V2_InnerLoop5_CtaSize32_ThrdOuterLoop2_CVecSplit4",
+  "TacticValue": "0x866a384903e691f2",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 487_QuantizeLinear]\u001e[ONNX Layer: Conv_7]\u001e[ONNX Layer: Clip_8]\u001e[ONNX Layer: 328_QuantizeLinear]\u001e[ONNX Layer: 325_DequantizeLinear]\u001e[ONNX Layer: 487_DequantizeLinear]"
+},{
+  "Name": "490 + 490_QuantizeLinear + Conv_9",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "328_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "489_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,24,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 24,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 2304},
+  "Bias": {"Type": "Float", "Count": 24},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize256x32x64_stage4_warpsize4x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xffb9fbd2bfa6c47d",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 490_QuantizeLinear]\u001e[ONNX Layer: Conv_9]\u001e[ONNX Layer: 489_QuantizeLinear]\u001e[ONNX Layer: 328_DequantizeLinear]\u001e[ONNX Layer: 490_DequantizeLinear]"
+},{
+  "Name": "493 + 493_QuantizeLinear + Conv_10 + Clip_11",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "489_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,24,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "333_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 144,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 144},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x192x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xe56748b5b7870ba4",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 493_QuantizeLinear]\u001e[ONNX Layer: Conv_10]\u001e[ONNX Layer: Clip_11]\u001e[ONNX Layer: 333_QuantizeLinear]\u001e[ONNX Layer: 489_DequantizeLinear]\u001e[ONNX Layer: 493_DequantizeLinear]"
+},{
+  "Name": "496 + 496_QuantizeLinear + Conv_12 + Clip_13",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "333_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "336_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 144,
+  "Groups": 144,
+  "Weights": {"Type": "Int8", "Count": 1296},
+  "Bias": {"Type": "Float", "Count": 144},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize128_ThrdOuterLoop2_CVecSplit8",
+  "TacticValue": "0x12fa33c2cfe73217",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 496_QuantizeLinear]\u001e[ONNX Layer: Conv_12]\u001e[ONNX Layer: Clip_13]\u001e[ONNX Layer: 336_QuantizeLinear]\u001e[ONNX Layer: 333_DequantizeLinear]\u001e[ONNX Layer: 496_DequantizeLinear]"
+},{
+  "Name": "499 + 499_QuantizeLinear + Conv_14 + Add_15",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "336_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "489_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,24,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "339_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,24,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 24,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 24},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize256x32x64_stage4_warpsize4x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xffb9fbd2bfa6c47d",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 499_QuantizeLinear]\u001e[ONNX Layer: Conv_14]\u001e[ONNX Layer: 339_QuantizeLinear]\u001e[ONNX Layer: 336_DequantizeLinear]\u001e[ONNX Layer: 499_DequantizeLinear]\u001e[ONNX Layer: Add_15]\u001e[ONNX Layer: 489_DequantizeLinear]"
+},{
+  "Name": "502 + 502_QuantizeLinear + Conv_16 + Clip_17",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "339_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,24,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "342_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 144,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 144},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x192x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xe56748b5b7870ba4",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 502_QuantizeLinear]\u001e[ONNX Layer: Conv_16]\u001e[ONNX Layer: Clip_17]\u001e[ONNX Layer: 342_QuantizeLinear]\u001e[ONNX Layer: 339_DequantizeLinear]\u001e[ONNX Layer: 502_DequantizeLinear]"
+},{
+  "Name": "505 + 505_QuantizeLinear + Conv_18 + Clip_19",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "342_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,56,56],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "345_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [2,2],
+  "Dilation": [1,1],
+  "OutMaps": 144,
+  "Groups": 144,
+  "Weights": {"Type": "Int8", "Count": 1296},
+  "Bias": {"Type": "Float", "Count": 144},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U2_V2_InnerLoop5_CtaSize128_ThrdOuterLoop1_CVecSplit4",
+  "TacticValue": "0x76430e43d2b982ce",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 505_QuantizeLinear]\u001e[ONNX Layer: Conv_18]\u001e[ONNX Layer: Clip_19]\u001e[ONNX Layer: 345_QuantizeLinear]\u001e[ONNX Layer: 342_DequantizeLinear]\u001e[ONNX Layer: 505_DequantizeLinear]"
+},{
+  "Name": "508 + 508_QuantizeLinear + Conv_20",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "345_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,144,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "507_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 32,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 4608},
+  "Bias": {"Type": "Float", "Count": 32},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x32x64_stage4_warpsize2x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xf207dff9d0b58a85",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 508_QuantizeLinear]\u001e[ONNX Layer: Conv_20]\u001e[ONNX Layer: 507_QuantizeLinear]\u001e[ONNX Layer: 345_DequantizeLinear]\u001e[ONNX Layer: 508_DequantizeLinear]"
+},{
+  "Name": "511 + 511_QuantizeLinear + Conv_21 + Clip_22",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "507_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "350_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 192,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 6144},
+  "Bias": {"Type": "Float", "Count": 192},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x64x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x483ad1560c6e5e27",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 511_QuantizeLinear]\u001e[ONNX Layer: Conv_21]\u001e[ONNX Layer: Clip_22]\u001e[ONNX Layer: 350_QuantizeLinear]\u001e[ONNX Layer: 507_DequantizeLinear]\u001e[ONNX Layer: 511_DequantizeLinear]"
+},{
+  "Name": "514 + 514_QuantizeLinear + Conv_23 + Clip_24",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "350_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "353_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 192,
+  "Groups": 192,
+  "Weights": {"Type": "Int8", "Count": 1728},
+  "Bias": {"Type": "Float", "Count": 192},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize64_ThrdOuterLoop1_CVecSplit4",
+  "TacticValue": "0xeb7b2220ae075200",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 514_QuantizeLinear]\u001e[ONNX Layer: Conv_23]\u001e[ONNX Layer: Clip_24]\u001e[ONNX Layer: 353_QuantizeLinear]\u001e[ONNX Layer: 350_DequantizeLinear]\u001e[ONNX Layer: 514_DequantizeLinear]"
+},{
+  "Name": "517 + 517_QuantizeLinear + Conv_25 + Add_26",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "353_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "507_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "356_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 32,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 6144},
+  "Bias": {"Type": "Float", "Count": 32},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x32x64_stage6_warpsize2x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3912ca79eb9a8be1",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 517_QuantizeLinear]\u001e[ONNX Layer: Conv_25]\u001e[ONNX Layer: 356_QuantizeLinear]\u001e[ONNX Layer: 353_DequantizeLinear]\u001e[ONNX Layer: 517_DequantizeLinear]\u001e[ONNX Layer: Add_26]\u001e[ONNX Layer: 507_DequantizeLinear]"
+},{
+  "Name": "520 + 520_QuantizeLinear + Conv_27 + Clip_28",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "356_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "359_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 192,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 6144},
+  "Bias": {"Type": "Float", "Count": 192},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x64x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x483ad1560c6e5e27",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 520_QuantizeLinear]\u001e[ONNX Layer: Conv_27]\u001e[ONNX Layer: Clip_28]\u001e[ONNX Layer: 359_QuantizeLinear]\u001e[ONNX Layer: 356_DequantizeLinear]\u001e[ONNX Layer: 520_DequantizeLinear]"
+},{
+  "Name": "523 + 523_QuantizeLinear + Conv_29 + Clip_30",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "359_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "362_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 192,
+  "Groups": 192,
+  "Weights": {"Type": "Int8", "Count": 1728},
+  "Bias": {"Type": "Float", "Count": 192},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize64_ThrdOuterLoop1_CVecSplit4",
+  "TacticValue": "0xeb7b2220ae075200",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 523_QuantizeLinear]\u001e[ONNX Layer: Conv_29]\u001e[ONNX Layer: Clip_30]\u001e[ONNX Layer: 362_QuantizeLinear]\u001e[ONNX Layer: 359_DequantizeLinear]\u001e[ONNX Layer: 523_DequantizeLinear]"
+},{
+  "Name": "526 + 526_QuantizeLinear + Conv_31 + Add_32",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "362_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "356_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "365_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 32,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 6144},
+  "Bias": {"Type": "Float", "Count": 32},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x32x64_stage6_warpsize2x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3912ca79eb9a8be1",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 526_QuantizeLinear]\u001e[ONNX Layer: Conv_31]\u001e[ONNX Layer: 365_QuantizeLinear]\u001e[ONNX Layer: 362_DequantizeLinear]\u001e[ONNX Layer: 526_DequantizeLinear]\u001e[ONNX Layer: Add_32]\u001e[ONNX Layer: 356_DequantizeLinear]"
+},{
+  "Name": "529 + 529_QuantizeLinear + Conv_33 + Clip_34",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "365_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,32,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "368_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 192,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 6144},
+  "Bias": {"Type": "Float", "Count": 192},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x64x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x483ad1560c6e5e27",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 529_QuantizeLinear]\u001e[ONNX Layer: Conv_33]\u001e[ONNX Layer: Clip_34]\u001e[ONNX Layer: 368_QuantizeLinear]\u001e[ONNX Layer: 365_DequantizeLinear]\u001e[ONNX Layer: 529_DequantizeLinear]"
+},{
+  "Name": "532 + 532_QuantizeLinear + Conv_35 + Clip_36",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "368_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,28,28],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "371_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [2,2],
+  "Dilation": [1,1],
+  "OutMaps": 192,
+  "Groups": 192,
+  "Weights": {"Type": "Int8", "Count": 1728},
+  "Bias": {"Type": "Float", "Count": 192},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U2_V2_spv32_special",
+  "TacticValue": "0x77165216ca906393",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 532_QuantizeLinear]\u001e[ONNX Layer: Conv_35]\u001e[ONNX Layer: Clip_36]\u001e[ONNX Layer: 371_QuantizeLinear]\u001e[ONNX Layer: 368_DequantizeLinear]\u001e[ONNX Layer: 532_DequantizeLinear]"
+},{
+  "Name": "535 + 535_QuantizeLinear + Conv_37",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "371_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,192,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "534_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 64,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 12288},
+  "Bias": {"Type": "Float", "Count": 64},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x32x64_stage6_warpsize2x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xcae7b5888d47fe1f",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 535_QuantizeLinear]\u001e[ONNX Layer: Conv_37]\u001e[ONNX Layer: 534_QuantizeLinear]\u001e[ONNX Layer: 371_DequantizeLinear]\u001e[ONNX Layer: 535_DequantizeLinear]"
+},{
+  "Name": "538 + 538_QuantizeLinear + Conv_38 + Clip_39",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "534_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "376_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize48x128x64_stage3_warpsize1x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xb14c1f9154f6db4e",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 538_QuantizeLinear]\u001e[ONNX Layer: Conv_38]\u001e[ONNX Layer: Clip_39]\u001e[ONNX Layer: 376_QuantizeLinear]\u001e[ONNX Layer: 534_DequantizeLinear]\u001e[ONNX Layer: 538_DequantizeLinear]"
+},{
+  "Name": "541 + 541_QuantizeLinear + Conv_40 + Clip_41",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "376_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "379_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 384,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize64_ThrdOuterLoop1_CVecSplit8",
+  "TacticValue": "0x670a66adae96b055",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 541_QuantizeLinear]\u001e[ONNX Layer: Conv_40]\u001e[ONNX Layer: Clip_41]\u001e[ONNX Layer: 379_QuantizeLinear]\u001e[ONNX Layer: 376_DequantizeLinear]\u001e[ONNX Layer: 541_DequantizeLinear]"
+},{
+  "Name": "544 + 544_QuantizeLinear + Conv_42 + Add_43",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "379_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "534_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "382_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 64,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 64},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x31de506085a332d4",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 544_QuantizeLinear]\u001e[ONNX Layer: Conv_42]\u001e[ONNX Layer: 382_QuantizeLinear]\u001e[ONNX Layer: 379_DequantizeLinear]\u001e[ONNX Layer: 544_DequantizeLinear]\u001e[ONNX Layer: Add_43]\u001e[ONNX Layer: 534_DequantizeLinear]"
+},{
+  "Name": "547 + 547_QuantizeLinear + Conv_44 + Clip_45",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "382_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "385_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize48x128x64_stage3_warpsize1x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xb14c1f9154f6db4e",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 547_QuantizeLinear]\u001e[ONNX Layer: Conv_44]\u001e[ONNX Layer: Clip_45]\u001e[ONNX Layer: 385_QuantizeLinear]\u001e[ONNX Layer: 382_DequantizeLinear]\u001e[ONNX Layer: 547_DequantizeLinear]"
+},{
+  "Name": "550 + 550_QuantizeLinear + Conv_46 + Clip_47",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "385_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "388_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 384,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize64_ThrdOuterLoop1_CVecSplit8",
+  "TacticValue": "0x670a66adae96b055",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 550_QuantizeLinear]\u001e[ONNX Layer: Conv_46]\u001e[ONNX Layer: Clip_47]\u001e[ONNX Layer: 388_QuantizeLinear]\u001e[ONNX Layer: 385_DequantizeLinear]\u001e[ONNX Layer: 550_DequantizeLinear]"
+},{
+  "Name": "553 + 553_QuantizeLinear + Conv_48 + Add_49",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "388_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "382_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "391_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 64,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 64},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x31de506085a332d4",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 553_QuantizeLinear]\u001e[ONNX Layer: Conv_48]\u001e[ONNX Layer: 391_QuantizeLinear]\u001e[ONNX Layer: 388_DequantizeLinear]\u001e[ONNX Layer: 553_DequantizeLinear]\u001e[ONNX Layer: Add_49]\u001e[ONNX Layer: 382_DequantizeLinear]"
+},{
+  "Name": "556 + 556_QuantizeLinear + Conv_50 + Clip_51",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "391_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "394_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize48x128x64_stage3_warpsize1x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xb14c1f9154f6db4e",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 556_QuantizeLinear]\u001e[ONNX Layer: Conv_50]\u001e[ONNX Layer: Clip_51]\u001e[ONNX Layer: 394_QuantizeLinear]\u001e[ONNX Layer: 391_DequantizeLinear]\u001e[ONNX Layer: 556_DequantizeLinear]"
+},{
+  "Name": "559 + 559_QuantizeLinear + Conv_52 + Clip_53",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "394_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "397_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 384,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize64_ThrdOuterLoop1_CVecSplit8",
+  "TacticValue": "0x670a66adae96b055",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 559_QuantizeLinear]\u001e[ONNX Layer: Conv_52]\u001e[ONNX Layer: Clip_53]\u001e[ONNX Layer: 397_QuantizeLinear]\u001e[ONNX Layer: 394_DequantizeLinear]\u001e[ONNX Layer: 559_DequantizeLinear]"
+},{
+  "Name": "562 + 562_QuantizeLinear + Conv_54 + Add_55",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "397_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "391_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "400_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 64,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 64},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x31de506085a332d4",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 562_QuantizeLinear]\u001e[ONNX Layer: Conv_54]\u001e[ONNX Layer: 400_QuantizeLinear]\u001e[ONNX Layer: 397_DequantizeLinear]\u001e[ONNX Layer: 562_DequantizeLinear]\u001e[ONNX Layer: Add_55]\u001e[ONNX Layer: 391_DequantizeLinear]"
+},{
+  "Name": "565 + 565_QuantizeLinear + Conv_56 + Clip_57",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "400_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,64,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "403_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 24576},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize48x128x64_stage3_warpsize1x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xb14c1f9154f6db4e",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 565_QuantizeLinear]\u001e[ONNX Layer: Conv_56]\u001e[ONNX Layer: Clip_57]\u001e[ONNX Layer: 403_QuantizeLinear]\u001e[ONNX Layer: 400_DequantizeLinear]\u001e[ONNX Layer: 565_DequantizeLinear]"
+},{
+  "Name": "568 + 568_QuantizeLinear + Conv_58 + Clip_59",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "403_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "406_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 384,
+  "Groups": 384,
+  "Weights": {"Type": "Int8", "Count": 3456},
+  "Bias": {"Type": "Float", "Count": 384},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_depthwiseSdcrr_INT8NCxHW32_R3_S3_U1_V1_ReusePRMT_InnerLoop4_CtaSize64_ThrdOuterLoop1_CVecSplit8",
+  "TacticValue": "0x670a66adae96b055",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 568_QuantizeLinear]\u001e[ONNX Layer: Conv_58]\u001e[ONNX Layer: Clip_59]\u001e[ONNX Layer: 406_QuantizeLinear]\u001e[ONNX Layer: 403_DequantizeLinear]\u001e[ONNX Layer: 568_DequantizeLinear]"
+},{
+  "Name": "571 + 571_QuantizeLinear + Conv_60",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "406_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,384,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "570_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 96,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 36864},
+  "Bias": {"Type": "Float", "Count": 96},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xc22b2f91e37e472a",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 571_QuantizeLinear]\u001e[ONNX Layer: Conv_60]\u001e[ONNX Layer: 570_QuantizeLinear]\u001e[ONNX Layer: 406_DequantizeLinear]\u001e[ONNX Layer: 571_DequantizeLinear]"
+},{
+  "Name": "574 + 574_QuantizeLinear + Conv_61 + Clip_62",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "570_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "411_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 576,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 55296},
+  "Bias": {"Type": "Float", "Count": 576},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x128x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x764ba04bb839d539",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 574_QuantizeLinear]\u001e[ONNX Layer: Conv_61]\u001e[ONNX Layer: Clip_62]\u001e[ONNX Layer: 411_QuantizeLinear]\u001e[ONNX Layer: 570_DequantizeLinear]\u001e[ONNX Layer: 574_DequantizeLinear]"
+},{
+  "Name": "577 + 577_QuantizeLinear + Conv_63 + Clip_64",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "411_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "414_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 576,
+  "Groups": 576,
+  "Weights": {"Type": "Int8", "Count": 5184},
+  "Bias": {"Type": "Float", "Count": 576},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U1_V1_spv32_special",
+  "TacticValue": "0xcbeb66b32f13a156",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 577_QuantizeLinear]\u001e[ONNX Layer: Conv_63]\u001e[ONNX Layer: Clip_64]\u001e[ONNX Layer: 414_QuantizeLinear]\u001e[ONNX Layer: 411_DequantizeLinear]\u001e[ONNX Layer: 577_DequantizeLinear]"
+},{
+  "Name": "580 + 580_QuantizeLinear + Conv_65 + Add_66",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "414_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "570_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "417_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 96,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 55296},
+  "Bias": {"Type": "Float", "Count": 96},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xc22b2f91e37e472a",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 580_QuantizeLinear]\u001e[ONNX Layer: Conv_65]\u001e[ONNX Layer: 417_QuantizeLinear]\u001e[ONNX Layer: 414_DequantizeLinear]\u001e[ONNX Layer: 580_DequantizeLinear]\u001e[ONNX Layer: Add_66]\u001e[ONNX Layer: 570_DequantizeLinear]"
+},{
+  "Name": "583 + 583_QuantizeLinear + Conv_67 + Clip_68",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "417_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "420_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 576,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 55296},
+  "Bias": {"Type": "Float", "Count": 576},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x128x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x764ba04bb839d539",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 583_QuantizeLinear]\u001e[ONNX Layer: Conv_67]\u001e[ONNX Layer: Clip_68]\u001e[ONNX Layer: 420_QuantizeLinear]\u001e[ONNX Layer: 417_DequantizeLinear]\u001e[ONNX Layer: 583_DequantizeLinear]"
+},{
+  "Name": "586 + 586_QuantizeLinear + Conv_69 + Clip_70",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "420_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "423_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 576,
+  "Groups": 576,
+  "Weights": {"Type": "Int8", "Count": 5184},
+  "Bias": {"Type": "Float", "Count": 576},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U1_V1_spv32_special",
+  "TacticValue": "0xcbeb66b32f13a156",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 586_QuantizeLinear]\u001e[ONNX Layer: Conv_69]\u001e[ONNX Layer: Clip_70]\u001e[ONNX Layer: 423_QuantizeLinear]\u001e[ONNX Layer: 420_DequantizeLinear]\u001e[ONNX Layer: 586_DequantizeLinear]"
+},{
+  "Name": "589 + 589_QuantizeLinear + Conv_71 + Add_72",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "423_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "417_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "426_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 96,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 55296},
+  "Bias": {"Type": "Float", "Count": 96},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xc22b2f91e37e472a",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 589_QuantizeLinear]\u001e[ONNX Layer: Conv_71]\u001e[ONNX Layer: 426_QuantizeLinear]\u001e[ONNX Layer: 423_DequantizeLinear]\u001e[ONNX Layer: 589_DequantizeLinear]\u001e[ONNX Layer: Add_72]\u001e[ONNX Layer: 417_DequantizeLinear]"
+},{
+  "Name": "592 + 592_QuantizeLinear + Conv_73 + Clip_74",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "426_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,96,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "429_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 576,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 55296},
+  "Bias": {"Type": "Float", "Count": 576},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize96x128x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x764ba04bb839d539",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 592_QuantizeLinear]\u001e[ONNX Layer: Conv_73]\u001e[ONNX Layer: Clip_74]\u001e[ONNX Layer: 429_QuantizeLinear]\u001e[ONNX Layer: 426_DequantizeLinear]\u001e[ONNX Layer: 592_DequantizeLinear]"
+},{
+  "Name": "595 + 595_QuantizeLinear + Conv_75 + Clip_76",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "429_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,14,14],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "432_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [2,2],
+  "Dilation": [1,1],
+  "OutMaps": 576,
+  "Groups": 576,
+  "Weights": {"Type": "Int8", "Count": 5184},
+  "Bias": {"Type": "Float", "Count": 576},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U2_V2_spv32_special",
+  "TacticValue": "0x77165216ca906393",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 595_QuantizeLinear]\u001e[ONNX Layer: Conv_75]\u001e[ONNX Layer: Clip_76]\u001e[ONNX Layer: 432_QuantizeLinear]\u001e[ONNX Layer: 429_DequantizeLinear]\u001e[ONNX Layer: 595_DequantizeLinear]"
+},{
+  "Name": "598 + 598_QuantizeLinear + Conv_77",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "432_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,576,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "597_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 160,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 92160},
+  "Bias": {"Type": "Float", "Count": 160},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_t1r1s1",
+  "TacticValue": "0x596666386c88024b",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 598_QuantizeLinear]\u001e[ONNX Layer: Conv_77]\u001e[ONNX Layer: 597_QuantizeLinear]\u001e[ONNX Layer: 432_DequantizeLinear]\u001e[ONNX Layer: 598_DequantizeLinear]"
+},{
+  "Name": "601 + 601_QuantizeLinear + Conv_78 + Clip_79",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "597_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "437_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 960,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 153600},
+  "Bias": {"Type": "Float", "Count": 960},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x128x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3ffcb62b1c6bb94f",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 601_QuantizeLinear]\u001e[ONNX Layer: Conv_78]\u001e[ONNX Layer: Clip_79]\u001e[ONNX Layer: 437_QuantizeLinear]\u001e[ONNX Layer: 597_DequantizeLinear]\u001e[ONNX Layer: 601_DequantizeLinear]"
+},{
+  "Name": "604 + 604_QuantizeLinear + Conv_80 + Clip_81",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "437_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "440_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 960,
+  "Groups": 960,
+  "Weights": {"Type": "Int8", "Count": 8640},
+  "Bias": {"Type": "Float", "Count": 960},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U1_V1_spv32_special",
+  "TacticValue": "0xcbeb66b32f13a156",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 604_QuantizeLinear]\u001e[ONNX Layer: Conv_80]\u001e[ONNX Layer: Clip_81]\u001e[ONNX Layer: 440_QuantizeLinear]\u001e[ONNX Layer: 437_DequantizeLinear]\u001e[ONNX Layer: 604_DequantizeLinear]"
+},{
+  "Name": "607 + 607_QuantizeLinear + Conv_82 + Add_83",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "440_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "597_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "443_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 160,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 153600},
+  "Bias": {"Type": "Float", "Count": 160},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x32x64_stage6_warpsize2x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3912ca79eb9a8be1",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 607_QuantizeLinear]\u001e[ONNX Layer: Conv_82]\u001e[ONNX Layer: 443_QuantizeLinear]\u001e[ONNX Layer: 440_DequantizeLinear]\u001e[ONNX Layer: 607_DequantizeLinear]\u001e[ONNX Layer: Add_83]\u001e[ONNX Layer: 597_DequantizeLinear]"
+},{
+  "Name": "610 + 610_QuantizeLinear + Conv_84 + Clip_85",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "443_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "446_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 960,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 153600},
+  "Bias": {"Type": "Float", "Count": 960},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x128x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3ffcb62b1c6bb94f",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 610_QuantizeLinear]\u001e[ONNX Layer: Conv_84]\u001e[ONNX Layer: Clip_85]\u001e[ONNX Layer: 446_QuantizeLinear]\u001e[ONNX Layer: 443_DequantizeLinear]\u001e[ONNX Layer: 610_DequantizeLinear]"
+},{
+  "Name": "613 + 613_QuantizeLinear + Conv_86 + Clip_87",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "446_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "449_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 960,
+  "Groups": 960,
+  "Weights": {"Type": "Int8", "Count": 8640},
+  "Bias": {"Type": "Float", "Count": 960},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U1_V1_spv32_special",
+  "TacticValue": "0xcbeb66b32f13a156",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 613_QuantizeLinear]\u001e[ONNX Layer: Conv_86]\u001e[ONNX Layer: Clip_87]\u001e[ONNX Layer: 449_QuantizeLinear]\u001e[ONNX Layer: 446_DequantizeLinear]\u001e[ONNX Layer: 613_DequantizeLinear]"
+},{
+  "Name": "616 + 616_QuantizeLinear + Conv_88 + Add_89",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "449_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  },
+  {
+    "Name": "443_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "452_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 160,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 153600},
+  "Bias": {"Type": "Float", "Count": 160},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 1,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize32x32x64_stage6_warpsize2x1x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3912ca79eb9a8be1",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 616_QuantizeLinear]\u001e[ONNX Layer: Conv_88]\u001e[ONNX Layer: 452_QuantizeLinear]\u001e[ONNX Layer: 449_DequantizeLinear]\u001e[ONNX Layer: 616_DequantizeLinear]\u001e[ONNX Layer: Add_89]\u001e[ONNX Layer: 443_DequantizeLinear]"
+},{
+  "Name": "619 + 619_QuantizeLinear + Conv_90 + Clip_91",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "452_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,160,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "455_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 960,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 153600},
+  "Bias": {"Type": "Float", "Count": 960},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x128x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0x3ffcb62b1c6bb94f",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 619_QuantizeLinear]\u001e[ONNX Layer: Conv_90]\u001e[ONNX Layer: Clip_91]\u001e[ONNX Layer: 455_QuantizeLinear]\u001e[ONNX Layer: 452_DequantizeLinear]\u001e[ONNX Layer: 619_DequantizeLinear]"
+},{
+  "Name": "622 + 622_QuantizeLinear + Conv_92 + Clip_93",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "455_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "458_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [3,3],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [1,1],
+  "PostPadding": [1,1],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 960,
+  "Groups": 960,
+  "Weights": {"Type": "Int8", "Count": 8640},
+  "Bias": {"Type": "Float", "Count": 960},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm72_xmma_convolution_trt_depthwise_i8_conv_int8ncxhw32_int8ncxhw32_int8kcrs_R3_S3_U1_V1_spv32_special",
+  "TacticValue": "0xcbeb66b32f13a156",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 622_QuantizeLinear]\u001e[ONNX Layer: Conv_92]\u001e[ONNX Layer: Clip_93]\u001e[ONNX Layer: 458_QuantizeLinear]\u001e[ONNX Layer: 455_DequantizeLinear]\u001e[ONNX Layer: 622_DequantizeLinear]"
+},{
+  "Name": "625 + 625_QuantizeLinear + Conv_94",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "458_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,960,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "624_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,320,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 320,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 307200},
+  "Bias": {"Type": "Float", "Count": 320},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "NONE",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x64x64_stage6_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xc22b2f91e37e472a",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 625_QuantizeLinear]\u001e[ONNX Layer: Conv_94]\u001e[ONNX Layer: 624_QuantizeLinear]\u001e[ONNX Layer: 458_DequantizeLinear]\u001e[ONNX Layer: 625_DequantizeLinear]"
+},{
+  "Name": "628 + 628_QuantizeLinear + Conv_95 + Clip_96",
+  "LayerType": "CaskConvolution",
+  "Inputs": [
+  {
+    "Name": "624_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,320,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "463_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,1280,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "ParameterType": "Convolution",
+  "Kernel": [1,1],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "Dilation": [1,1],
+  "OutMaps": 1280,
+  "Groups": 1,
+  "Weights": {"Type": "Int8", "Count": 409600},
+  "Bias": {"Type": "Float", "Count": 1280},
+  "HasBias": 1,
+  "HasReLU": 0,
+  "HasSparseWeights": 0,
+  "HasDynamicFilter": 0,
+  "HasDynamicBias": 0,
+  "HasResidual": 0,
+  "ConvXAsActInputIdx": -1,
+  "BiasAsActInputIdx": -1,
+  "ResAsActInputIdx": -1,
+  "Activation": "CLIPPED_RELU",
+  "ParameterSubType": "[0.000000,127.000000]",
+  "TacticName": "sm80_xmma_fprop_implicit_gemm_interleaved_i8i8_i8i32_f32_nchw_vect_c_32kcrs_vect_c_32_nchw_vect_c_32_tilesize64x192x64_stage3_warpsize2x2x1_g1_tensor16x8x32_simple_t1r1s1",
+  "TacticValue": "0xde3cb6dda9a9f049",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 628_QuantizeLinear]\u001e[ONNX Layer: Conv_95]\u001e[ONNX Layer: Clip_96]\u001e[ONNX Layer: 463_QuantizeLinear]\u001e[ONNX Layer: 624_DequantizeLinear]\u001e[ONNX Layer: 628_DequantizeLinear]"
+},{
+  "Name": "463_DequantizeLinear",
+  "LayerType": "Reformat",
+  "Inputs": [
+  {
+    "Name": "463_QuantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,1280,7,7],
+    "Format/Datatype": "Thirty-two wide channel vectorized row major Int8 format"
+  }],
+  "Outputs": [
+  {
+    "Name": "463_DequantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,1280,7,7],
+    "Format/Datatype": "Channel major FP16 format where channel % 8 == 0"
+  }],
+  "ParameterType": "Reformat",
+  "Origin": "QDQ",
+  "TacticValue": "0x0000000000000000",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: 463_DequantizeLinear]"
+},{
+  "Name": "GlobalAveragePool_97",
+  "LayerType": "CaskPooling",
+  "Inputs": [
+  {
+    "Name": "463_DequantizeLinear_Output",
+    "Location": "Device",
+    "Dimensions": [1,1280,7,7],
+    "Format/Datatype": "Channel major FP16 format where channel % 8 == 0"
+  }],
+  "Outputs": [
+  {
+    "Name": "464",
+    "Location": "Device",
+    "Dimensions": [1,1280,1,1],
+    "Format/Datatype": "Channel major FP16 format where channel % 8 == 0"
+  }],
+  "ParameterType": "Pooling",
+  "PoolingType": "AVERAGE",
+  "WindowSize": [7,7],
+  "PaddingMode": "kEXPLICIT_ROUND_DOWN",
+  "PrePadding": [0,0],
+  "PostPadding": [0,0],
+  "Stride": [1,1],
+  "BlendFactor": 0,
+  "AverageCountExcludesPadding": 1,
+  "TacticName": "sm50_xmma_pooling_fw_4d_FP16FP32NHWC_Average_FastDiv_CAlign8",
+  "TacticValue": "0xdaa6f29208dec74b",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: GlobalAveragePool_97]"
+},{
+  "Name": "__myl_FcCast_myl56_0",
+  "LayerType": "fusion",
+  "Inputs": [
+  {
+    "Name": "464",
+    "Dimensions": [1,1280],
+    "Format/Datatype": "Half"
+  }],
+  "Outputs": [
+  {
+    "Name": "output",
+    "Dimensions": [1,1000],
+    "Format/Datatype": "Float"
+  }],
+  "TacticName": "sm80_xmma_gemm_f16f16_f16f16_f16_tn_n_tilesize64x64x64_stage4_warpsize2x2x1_tensor16x8x16_by_fusion_tactic",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: Gemm_104]"
+}],
+"Bindings": ["input"
+,"output"
+]}

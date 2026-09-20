@@ -1,0 +1,11 @@
+total 57
+  52  CaskConvolution
+   2  Reformat
+   1  NoOp
+   1  CaskPooling
+   1  fusion
+
+  52  Thirty-two wide channel vectorized row major Int8 format
+   2  Four wide channel vectorized row major Int8 format
+   2  Channel major FP16 format where channel % 8 == 0
+   1  Float
