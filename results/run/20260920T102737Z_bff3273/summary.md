@@ -223,7 +223,7 @@ python scripts/eval_trt.py models/mobilenetv2_int8.plan
 ### Interpretation
 
 - FP16 remains effectively free from an accuracy perspective while significantly improving latency and throughput.
-- INT8 keeps high performance with a small accuracy loss, around 0.75 points of Top-1 on this dataset.
+- INT8 keeps high performance with a small accuracy loss, around 0.78 points of Top-1 on this dataset.
 - CUDA Graph reduces the host-side overhead substantially in the INT8 run, improving the median latency from about 0.809 ms to about 0.626 ms.
 - Throughput speedup exceeds latency speedup, and the gap widens as the kernels get shorter: trtexec overlaps the H2D and D2H copies with compute across iterations, so the roughly 0.04 ms of transfer per query is hidden. That overhead is a larger share of a 0.58 ms INT8 kernel than of a 1.74 ms FP32 one, which is why INT8 reaches 2.987x on throughput but 2.864x on median latency, while TF32 shows almost no divergence (1.356x vs 1.346x).
 - The current run confirms the expected pattern: the INT8 graph-enabled configuration is the fastest measured variant in this benchmark set.
