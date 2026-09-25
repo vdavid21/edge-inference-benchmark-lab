@@ -1,0 +1,60 @@
+[
+  { "count" : 27895 }
+, { "name" : "input_QuantizeLinear", "timeMs" : 1545.25, "averageMs" : 0.0553952, "medianMs" : 0.05504, "percentage" : 5.8804 }
+, { "name" : "input_cast_to_fp16", "timeMs" : 0, "averageMs" : 0, "medianMs" : 0, "percentage" : 0 }
+, { "name" : "475 + 475_QuantizeLinear + Conv_0 + Clip_1", "timeMs" : 752.314, "averageMs" : 0.0269695, "medianMs" : 0.026656, "percentage" : 2.86291 }
+, { "name" : "478 + 478_QuantizeLinear + Conv_2 + Clip_3", "timeMs" : 647.724, "averageMs" : 0.0232201, "medianMs" : 0.02304, "percentage" : 2.46489 }
+, { "name" : "481 + 481_QuantizeLinear + Conv_4", "timeMs" : 628.93, "averageMs" : 0.0225463, "medianMs" : 0.022464, "percentage" : 2.39337 }
+, { "name" : "484 + 484_QuantizeLinear + Conv_5 + Clip_6", "timeMs" : 1167.82, "averageMs" : 0.041865, "medianMs" : 0.041824, "percentage" : 4.44411 }
+, { "name" : "487 + 487_QuantizeLinear + Conv_7 + Clip_8", "timeMs" : 707.992, "averageMs" : 0.0253806, "medianMs" : 0.02528, "percentage" : 2.69424 }
+, { "name" : "490 + 490_QuantizeLinear + Conv_9", "timeMs" : 381.258, "averageMs" : 0.0136676, "medianMs" : 0.013536, "percentage" : 1.45086 }
+, { "name" : "493 + 493_QuantizeLinear + Conv_10 + Clip_11", "timeMs" : 705.123, "averageMs" : 0.0252778, "medianMs" : 0.025184, "percentage" : 2.68332 }
+, { "name" : "496 + 496_QuantizeLinear + Conv_12 + Clip_13", "timeMs" : 730.458, "averageMs" : 0.026186, "medianMs" : 0.026048, "percentage" : 2.77973 }
+, { "name" : "499 + 499_QuantizeLinear + Conv_14 + Add_15", "timeMs" : 437.324, "averageMs" : 0.0156775, "medianMs" : 0.015552, "percentage" : 1.66422 }
+, { "name" : "502 + 502_QuantizeLinear + Conv_16 + Clip_17", "timeMs" : 667.78, "averageMs" : 0.0239391, "medianMs" : 0.023904, "percentage" : 2.54121 }
+, { "name" : "505 + 505_QuantizeLinear + Conv_18 + Clip_19", "timeMs" : 468.031, "averageMs" : 0.0167783, "medianMs" : 0.016768, "percentage" : 1.78108 }
+, { "name" : "508 + 508_QuantizeLinear + Conv_20", "timeMs" : 330.819, "averageMs" : 0.0118594, "medianMs" : 0.01184, "percentage" : 1.25892 }
+, { "name" : "511 + 511_QuantizeLinear + Conv_21 + Clip_22", "timeMs" : 386.188, "averageMs" : 0.0138443, "medianMs" : 0.013824, "percentage" : 1.46962 }
+, { "name" : "514 + 514_QuantizeLinear + Conv_23 + Clip_24", "timeMs" : 437.745, "averageMs" : 0.0156926, "medianMs" : 0.01568, "percentage" : 1.66583 }
+, { "name" : "517 + 517_QuantizeLinear + Conv_25 + Add_26", "timeMs" : 337.826, "averageMs" : 0.0121106, "medianMs" : 0.012096, "percentage" : 1.28559 }
+, { "name" : "520 + 520_QuantizeLinear + Conv_27 + Clip_28", "timeMs" : 358.798, "averageMs" : 0.0128625, "medianMs" : 0.012832, "percentage" : 1.3654 }
+, { "name" : "523 + 523_QuantizeLinear + Conv_29 + Clip_30", "timeMs" : 427.127, "averageMs" : 0.0153119, "medianMs" : 0.015296, "percentage" : 1.62542 }
+, { "name" : "526 + 526_QuantizeLinear + Conv_31 + Add_32", "timeMs" : 307.647, "averageMs" : 0.0110287, "medianMs" : 0.01104, "percentage" : 1.17074 }
+, { "name" : "529 + 529_QuantizeLinear + Conv_33 + Clip_34", "timeMs" : 354.28, "averageMs" : 0.0127005, "medianMs" : 0.012704, "percentage" : 1.3482 }
+, { "name" : "532 + 532_QuantizeLinear + Conv_35 + Clip_36", "timeMs" : 315.791, "averageMs" : 0.0113207, "medianMs" : 0.011264, "percentage" : 1.20173 }
+, { "name" : "535 + 535_QuantizeLinear + Conv_37", "timeMs" : 299.437, "averageMs" : 0.0107344, "medianMs" : 0.010624, "percentage" : 1.1395 }
+, { "name" : "538 + 538_QuantizeLinear + Conv_38 + Clip_39", "timeMs" : 350.594, "averageMs" : 0.0125683, "medianMs" : 0.012512, "percentage" : 1.33417 }
+, { "name" : "541 + 541_QuantizeLinear + Conv_40 + Clip_41", "timeMs" : 364.964, "averageMs" : 0.0130835, "medianMs" : 0.012992, "percentage" : 1.38886 }
+, { "name" : "544 + 544_QuantizeLinear + Conv_42 + Add_43", "timeMs" : 325.84, "averageMs" : 0.011681, "medianMs" : 0.011552, "percentage" : 1.23997 }
+, { "name" : "547 + 547_QuantizeLinear + Conv_44 + Clip_45", "timeMs" : 310.256, "averageMs" : 0.0111223, "medianMs" : 0.011072, "percentage" : 1.18067 }
+, { "name" : "550 + 550_QuantizeLinear + Conv_46 + Clip_47", "timeMs" : 353.762, "averageMs" : 0.0126819, "medianMs" : 0.012576, "percentage" : 1.34623 }
+, { "name" : "553 + 553_QuantizeLinear + Conv_48 + Add_49", "timeMs" : 296.906, "averageMs" : 0.0106437, "medianMs" : 0.010528, "percentage" : 1.12986 }
+, { "name" : "556 + 556_QuantizeLinear + Conv_50 + Clip_51", "timeMs" : 306.572, "averageMs" : 0.0109902, "medianMs" : 0.010912, "percentage" : 1.16665 }
+, { "name" : "559 + 559_QuantizeLinear + Conv_52 + Clip_53", "timeMs" : 354.223, "averageMs" : 0.0126984, "medianMs" : 0.012608, "percentage" : 1.34798 }
+, { "name" : "562 + 562_QuantizeLinear + Conv_54 + Add_55", "timeMs" : 298.128, "averageMs" : 0.0106875, "medianMs" : 0.010592, "percentage" : 1.13452 }
+, { "name" : "565 + 565_QuantizeLinear + Conv_56 + Clip_57", "timeMs" : 310.22, "averageMs" : 0.011121, "medianMs" : 0.01104, "percentage" : 1.18053 }
+, { "name" : "568 + 568_QuantizeLinear + Conv_58 + Clip_59", "timeMs" : 354.467, "averageMs" : 0.0127072, "medianMs" : 0.012576, "percentage" : 1.34891 }
+, { "name" : "571 + 571_QuantizeLinear + Conv_60", "timeMs" : 327.206, "averageMs" : 0.0117299, "medianMs" : 0.011616, "percentage" : 1.24517 }
+, { "name" : "574 + 574_QuantizeLinear + Conv_61 + Clip_62", "timeMs" : 409.267, "averageMs" : 0.0146717, "medianMs" : 0.014528, "percentage" : 1.55745 }
+, { "name" : "577 + 577_QuantizeLinear + Conv_63 + Clip_64", "timeMs" : 372.795, "averageMs" : 0.0133642, "medianMs" : 0.01328, "percentage" : 1.41866 }
+, { "name" : "580 + 580_QuantizeLinear + Conv_65 + Add_66", "timeMs" : 338.716, "averageMs" : 0.0121425, "medianMs" : 0.012, "percentage" : 1.28897 }
+, { "name" : "583 + 583_QuantizeLinear + Conv_67 + Clip_68", "timeMs" : 375.951, "averageMs" : 0.0134774, "medianMs" : 0.013344, "percentage" : 1.43067 }
+, { "name" : "586 + 586_QuantizeLinear + Conv_69 + Clip_70", "timeMs" : 368.133, "averageMs" : 0.0131971, "medianMs" : 0.013088, "percentage" : 1.40092 }
+, { "name" : "589 + 589_QuantizeLinear + Conv_71 + Add_72", "timeMs" : 338.575, "averageMs" : 0.0121375, "medianMs" : 0.011968, "percentage" : 1.28844 }
+, { "name" : "592 + 592_QuantizeLinear + Conv_73 + Clip_74", "timeMs" : 374.496, "averageMs" : 0.0134252, "medianMs" : 0.013152, "percentage" : 1.42513 }
+, { "name" : "595 + 595_QuantizeLinear + Conv_75 + Clip_76", "timeMs" : 323.605, "averageMs" : 0.0116008, "medianMs" : 0.011424, "percentage" : 1.23147 }
+, { "name" : "598 + 598_QuantizeLinear + Conv_77", "timeMs" : 345.542, "averageMs" : 0.0123872, "medianMs" : 0.012, "percentage" : 1.31495 }
+, { "name" : "601 + 601_QuantizeLinear + Conv_78 + Clip_79", "timeMs" : 377.03, "averageMs" : 0.013516, "medianMs" : 0.012928, "percentage" : 1.43477 }
+, { "name" : "604 + 604_QuantizeLinear + Conv_80 + Clip_81", "timeMs" : 324.194, "averageMs" : 0.0116219, "medianMs" : 0.011136, "percentage" : 1.23371 }
+, { "name" : "607 + 607_QuantizeLinear + Conv_82 + Add_83", "timeMs" : 401.82, "averageMs" : 0.0144047, "medianMs" : 0.013504, "percentage" : 1.52911 }
+, { "name" : "610 + 610_QuantizeLinear + Conv_84 + Clip_85", "timeMs" : 359.852, "averageMs" : 0.0129002, "medianMs" : 0.012128, "percentage" : 1.3694 }
+, { "name" : "613 + 613_QuantizeLinear + Conv_86 + Clip_87", "timeMs" : 357.766, "averageMs" : 0.0128255, "medianMs" : 0.011872, "percentage" : 1.36147 }
+, { "name" : "616 + 616_QuantizeLinear + Conv_88 + Add_89", "timeMs" : 451.597, "averageMs" : 0.0161892, "medianMs" : 0.01744, "percentage" : 1.71854 }
+, { "name" : "619 + 619_QuantizeLinear + Conv_90 + Clip_91", "timeMs" : 412.521, "averageMs" : 0.0147884, "medianMs" : 0.015392, "percentage" : 1.56984 }
+, { "name" : "622 + 622_QuantizeLinear + Conv_92 + Clip_93", "timeMs" : 417.025, "averageMs" : 0.0149498, "medianMs" : 0.015328, "percentage" : 1.58697 }
+, { "name" : "625 + 625_QuantizeLinear + Conv_94", "timeMs" : 551.45, "averageMs" : 0.0197688, "medianMs" : 0.019904, "percentage" : 2.09852 }
+, { "name" : "628 + 628_QuantizeLinear + Conv_95 + Clip_96", "timeMs" : 539.459, "averageMs" : 0.0193389, "medianMs" : 0.019328, "percentage" : 2.0529 }
+, { "name" : "463_DequantizeLinear", "timeMs" : 374.719, "averageMs" : 0.0134332, "medianMs" : 0.01328, "percentage" : 1.42598 }
+, { "name" : "GlobalAveragePool_97", "timeMs" : 515.344, "averageMs" : 0.0184744, "medianMs" : 0.018336, "percentage" : 1.96113 }
+, { "name" : "__myl_FcCast_myl56_0", "timeMs" : 1599.32, "averageMs" : 0.0573335, "medianMs" : 0.057184, "percentage" : 6.08615 }
+]

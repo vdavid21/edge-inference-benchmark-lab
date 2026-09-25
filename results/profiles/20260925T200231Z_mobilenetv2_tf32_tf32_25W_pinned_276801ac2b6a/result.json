@@ -1,0 +1,148 @@
+{
+  "captured_utc": "20260925T200231Z",
+  "engine": "models/mobilenetv2_tf32.plan",
+  "engine_sha256_16": "0a5b6b316a15f6f0",
+  "onnx": "models/mobilenetv2-12.onnx",
+  "onnx_sha256_16": "554077ddef9336f6",
+  "precision": "tf32",
+  "trtexec_cmd": "/usr/src/tensorrt/bin/trtexec --loadEngine=models/mobilenetv2_tf32.plan --shapes=input:1x3x224x224 --warmUp=2000 --duration=30 --noDataTransfers --profilingVerbosity=detailed --dumpProfile --separateProfileRun --exportProfile=/home/vdavid21/edge-inference-benchmark-lab/results/profiles/20260925T200231Z_mobilenetv2_tf32_tf32_25W_pinned_276801ac2b6a/profile.json --useSpinWait",
+  "clocks_pinned": true,
+  "clocks": {
+    "gpu_hz_used": 905100000.0,
+    "emc_hz_used": 3199000000.0,
+    "gpu_hz_configured": 918000000,
+    "emc_hz_nominal": 3199000000.0,
+    "gpu_hz_measured": 905100000.0,
+    "emc_hz_measured": 3199000000.0,
+    "source": "measured"
+  },
+  "benchmark_run": {
+    "gpu_compute_p50_ms": 1.48242,
+    "latency_p50_ms": 1.48242,
+    "cuda_graph": false,
+    "data_transfers": false
+  },
+  "profile_run": {
+    "total_ms": 1.6228,
+    "scale_factor": 0.9135,
+    "instrumentation_overhead_pct": 9.5
+  },
+  "roofline": {
+    "precision": "tf32",
+    "gpu_mhz": 905.1,
+    "peak_gflops": 7414.6,
+    "bandwidth_gbs": 102.4,
+    "ridge_flop_per_byte": 72.4,
+    "n_compute_layers": 52,
+    "n_memory_bound": 52,
+    "pct_memory_bound": 100.0,
+    "ai_min": 0.86,
+    "ai_median": 13.24,
+    "ai_max": 28.96,
+    "peak_util_median_pct": 7.71,
+    "peak_util_best_pct": 16.52,
+    "overhead_pct_of_time": 6.21,
+    "unattributed_pct_of_time": 5.02,
+    "onnx_compute_nodes": 53,
+    "matched": 52,
+    "unmatched_node_indices": [
+      104
+    ],
+    "unmatched_flops": 2560000,
+    "total_onnx_flops": 601548544
+  },
+  "telemetry": {
+    "n_samples": 304,
+    "duration_s": 65.072,
+    "interval_ms": 200,
+    "vdd_cpu_gpu_cv_mean_mw": 5845.1,
+    "vdd_cpu_gpu_cv_p95_mw": 6217.0,
+    "vdd_cpu_gpu_cv_max_mw": 6295.0,
+    "vdd_in_mean_mw": 13798.5,
+    "vdd_in_p95_mw": 14515.0,
+    "vdd_in_max_mw": 14594.0,
+    "vdd_soc_mean_mw": 3873.6,
+    "vdd_soc_p95_mw": 4073.0,
+    "vdd_soc_max_mw": 4080.0,
+    "temp_cpu_max_c": 57.56,
+    "temp_soc2_max_c": 56.66,
+    "temp_soc0_max_c": 56.03,
+    "temp_gpu_max_c": 59.84,
+    "temp_tj_max_c": 59.84,
+    "temp_soc1_max_c": 56.75,
+    "temp_start_c": 51.75,
+    "temp_end_c": 58.562,
+    "gpu_util_mean": 91.4,
+    "gpu_util_min": 0,
+    "emc_util_mean": 30.8,
+    "emc_util_min": 1,
+    "gpu_mhz_mean": 905.1,
+    "gpu_mhz_min": 898,
+    "emc_mhz_mean": 3199.0,
+    "emc_mhz_min": 3199,
+    "ram_peak_mb": 3136
+  },
+  "env": {
+    "captured_utc": "2026-09-25T20:02:28+00:00",
+    "note": null,
+    "git": {
+      "sha": "276801ac2b6a9f34b326f58aca8e132ffe701f79",
+      "sha_short": "276801ac2b6a",
+      "dirty": true,
+      "branch": "main"
+    },
+    "board": {
+      "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+      "l4t": "r39.2.1",
+      "l4t_raw": "# R39 (release), REVISION: 2.1, GCID: 46758480, BOARD: generic, EABI: aarch64, DATE: Fri Aug  7 05:54:22 AM UTC 2026\n# KERNEL_VARIANT: oot\nTARGET_USERSPACE_LIB_DIR=nvidia\nTARGET_USERSPACE_LIB_DIR_PATH=usr/lib/aarch64-linux-gnu/nvidia",
+      "compatible_spec": "COMPATIBLE_SPEC 3767--0005--1--jetson-orin-nano-devkit-super-",
+      "kernel": "6.8.12-1021-tegra",
+      "arch": "aarch64"
+    },
+    "software": {
+      "python": "3.12.3",
+      "tensorrt": "10.16.2.10",
+      "numpy": "2.5.3",
+      "onnx": "1.22.0",
+      "onnxruntime": "1.29.0",
+      "nvidia_modelopt": "0.46.0",
+      "torch": "2.14.0+cpu",
+      "cuda": "13.2.86",
+      "apt": {
+        "libcudnn9-cuda-13": "9.20.0.46-1",
+        "libnvinfer-bin": "10.16.2.10-1+cuda13.2",
+        "nvidia-l4t-core": "39.2.1-20260806224157"
+      }
+    },
+    "clocks": {
+      "gpu_min_hz": 918000000,
+      "gpu_max_hz": 918000000,
+      "gpu_cur_hz": 918000000,
+      "gpu_pinned": true,
+      "emc_cur_hz": null,
+      "cpu_governor": "schedutil",
+      "cpu_max_khz": 1344000,
+      "jetson_clocks_raw": "SOC family:tegra234  Machine:NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super\nError: Run this script(/usr/bin/jetson_clocks) as a root user"
+    },
+    "power_mode": {
+      "mode_id": 1,
+      "name": "25W",
+      "raw": "NV Power Mode: 25W\n1"
+    },
+    "thermal_c": {
+      "cpu-thermal": 50.75,
+      "gpu-thermal": 51.53,
+      "soc0-thermal": 50.47,
+      "soc1-thermal": 50.72,
+      "soc2-thermal": 49.56,
+      "tj-thermal": 51.69
+    },
+    "load": {
+      "loadavg_1m": 0.2431640625,
+      "loadavg_5m": 0.3271484375,
+      "loadavg_15m": 0.22998046875,
+      "mem_total_kb": 7665288,
+      "mem_available_kb": 4439804
+    }
+  }
+}
