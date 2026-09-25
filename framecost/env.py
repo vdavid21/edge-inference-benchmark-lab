@@ -58,19 +58,53 @@ def _int(path: str) -> int | None:
 
 # --- identity ---------------------------------------------------------------
 
+# Paths holding measurement output rather than code or configuration.
+_RESULT_PREFIXES = ("results/",)
+
+
+def _status_paths(status: str) -> list[str]:
+    """Paths out of `git status --porcelain` v1, renames resolved to destination."""
+    paths = []
+    for line in status.splitlines():
+        if not line.strip():
+            continue
+        p = line[3:]                     # two status characters, then a space
+        if " -> " in p:                  # rename or copy: the destination is the file
+            p = p.split(" -> ", 1)[1]
+        paths.append(p.strip().strip('"'))
+    return paths
+
+
 def git_state(repo_root: str | Path = ".") -> dict:
     """SHA and cleanliness of the working tree.
 
-    `dirty` is the important field. A dirty tree means the SHA does not fully
-    describe what ran, so that result must not appear in published numbers.
+    `dirty` is the important field, and it has three values:
+
+        False           the tree matches the commit
+        "only results"  the sole changes are under results/, i.e. measurement
+                        output that this run or an earlier one wrote
+        True            something outside results/ differs from the commit
+
+    Only True disqualifies a result from publication, because the SHA then
+    fails to describe the code that ran. "only results" is the normal state
+    from the second run onward: a run writes its output into the repo and so
+    dirties the tree simply by existing. A plain boolean could not tell those
+    apart, and reported every run after the first as untraceable.
     """
     cwd = str(repo_root)
     sha = _run(["git", "-C", cwd, "rev-parse", "HEAD"])
     status = _run(["git", "-C", cwd, "status", "--porcelain"])
+
+    paths = _status_paths(status) if status else []
+    outside = [p for p in paths if not p.startswith(_RESULT_PREFIXES)]
+    dirty: bool | str = bool(paths)
+    if paths and not outside:
+        dirty = "only results"
+
     return {
         "sha": sha,
         "sha_short": sha[:12] if sha else None,
-        "dirty": bool(status),
+        "dirty": dirty,
         "branch": _run(["git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD"]),
     }
 
@@ -238,7 +272,7 @@ def write(out_path: str | Path, repo_root: str | Path = ".",
 def warn_if_unsuitable(env: dict) -> list[str]:
     """Conditions that make a run unfit for publication. Check before measuring."""
     w = []
-    if env["git"]["dirty"]:
+    if env["git"]["dirty"] is True:
         w.append("working tree is dirty — result not traceable to a commit")
     if env["clocks"]["gpu_pinned"] is False:
         w.append("GPU clocks not pinned — run `sudo jetson_clocks`")
