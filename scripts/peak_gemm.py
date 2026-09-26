@@ -68,6 +68,7 @@ import json
 import re
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -110,10 +111,62 @@ def make_matmul(n: int, precision: str, path: Path) -> None:
         graph, opset_imports=[helper.make_opsetid("", 17)]), str(path))
 
 
+def compute_phase_stats(sampler, gpu_hz: float, duration: int,
+                        util_threshold: int = 50) -> dict | None:
+    """Power, clocks and temperature during the timed region only.
+
+    The sampler spans the whole trtexec call, and that call is GPU-busy almost
+    throughout: TensorRT autotunes by executing candidate kernels on the device,
+    so the build phase is not idle and cannot be separated by utilisation alone.
+    Autotuning runs hundreds of short kernels at varying efficiency, so a clock
+    dip there says nothing about the steady-state measurement — including those
+    samples would raise false throttle flags and skew load power.
+
+    So the window is anchored by time: the timed region is the last `duration`
+    seconds before the process exits. The utilisation filter is kept only to
+    drop teardown samples at the very end.
+
+    `throttled` compares the minimum clock inside that window against the pinned
+    ceiling. With clocks pinned, a meaningful dip is the board pulling back —
+    thermal, or the current limiter that a dense GEMM can trip.
+    """
+    if not sampler.samples:
+        return None
+
+    t_end = sampler.samples[-1]["t"]
+    window_start = t_end - duration
+    busy = [s for s in sampler.samples
+            if s["t"] >= window_start
+            and (s.get("gpu_util_pct") or 0) >= util_threshold]
+    if not busy:
+        return None
+
+    vdd = np.array([s["power_mw"].get("VDD_IN", np.nan) for s in busy], dtype=float)
+    vdd = vdd[~np.isnan(vdd)]
+    gpu = [s["gpu_mhz"] for s in busy if s.get("gpu_mhz")]
+    tj = [s["temp_c"]["tj"] for s in busy if s.get("temp_c", {}).get("tj")]
+
+    ceiling_mhz = gpu_hz / 1e6
+    gpu_min = min(gpu) if gpu else None
+    return {
+        "window": "last_timed_region",
+        "window_seconds": duration,
+        "n_samples_total": len(sampler.samples),
+        "n_samples_in_window": len(busy),
+        "vdd_in_mean_mw": round(float(vdd.mean()), 1) if vdd.size else None,
+        "vdd_in_max_mw": round(float(vdd.max()), 1) if vdd.size else None,
+        "gpu_mhz_mean": round(float(np.mean(gpu)), 1) if gpu else None,
+        "gpu_mhz_min": gpu_min,
+        "gpu_mhz_ceiling": round(ceiling_mhz, 1),
+        "temp_tj_max_c": round(max(tj), 2) if tj else None,
+        "throttled": bool(gpu_min is not None and gpu_min < 0.95 * ceiling_mhz),
+    }
+
+
 def run_trtexec(onnx_path: Path, n: int, precision: str, duration: int,
-                work: Path, obey: bool, workspace_mb: int,
-                timing_cache: bool) -> dict:
-    layer_info = work / f"layers_{n}_{precision}.json"
+                out_dir: Path, cache_path: Path | None, obey: bool,
+                workspace_mb: int, telemetry: bool, gpu_hz: float) -> dict:
+    layer_info = out_dir / f"layers_{n}_{precision}.json"
     # No --shapes/--minShapes/--optShapes/--maxShapes: the generated ONNX is
     # fully static [n, n], so there are no dynamic dimensions to build an
     # optimization profile over, and passing them fails config setup.
@@ -123,10 +176,10 @@ def run_trtexec(onnx_path: Path, n: int, precision: str, duration: int,
            f"--memPoolSize=workspace:{workspace_mb}M",
            "--profilingVerbosity=detailed",
            f"--exportLayerInfo={layer_info}"]
-    if timing_cache:
+    if cache_path is not None:
         # Opt-in only, and never for a number that will be reported. See the
         # note in the module docstring.
-        cmd.append(f"--timingCacheFile={work/'gemm.cache'}")
+        cmd.append(f"--timingCacheFile={cache_path}")
     if precision == "fp32":
         cmd.append("--noTF32")          # true FP32 on the CUDA cores
     elif precision == "fp16":
@@ -138,9 +191,32 @@ def run_trtexec(onnx_path: Path, n: int, precision: str, duration: int,
             cmd += ["--precisionConstraints=obey", "--layerPrecisions=*:fp16"]
     # tf32: TensorRT's Ampere default, no flag
 
+    # A dense GEMM is the most power-hungry workload this board runs, so it can
+    # trip the current limit that a memory-bound network never approaches.
+    # Sampling turns "I saw a warning" into a recorded observation.
+    sampler = None
+    if telemetry:
+        try:
+            from framecost.telemetry import TegraSampler
+            sampler = TegraSampler(interval_ms=200).start()
+        except Exception as e:
+            # Never silent: without telemetry a throttled run looks identical
+            # to a clean one, and the number would be reported as if
+            # unconstrained.
+            print(f"         telemetry unavailable ({type(e).__name__}: {e}); "
+                  f"throttling will go undetected — try `sudo -v` first")
+            sampler = None
+
     p = subprocess.run(cmd, capture_output=True, text=True)
+
+    phase = None
+    if sampler is not None:
+        sampler.stop()
+        phase = compute_phase_stats(sampler, gpu_hz, duration)
+        sampler.to_csv(out_dir / f"telemetry_{n}_{precision}.csv")
+
     log = p.stdout + p.stderr
-    log_path = work / f"trtexec_{n}_{precision}.log"
+    log_path = out_dir / f"trtexec_{n}_{precision}.log"
     log_path.write_text(log)
 
     def diagnose() -> dict:
@@ -170,13 +246,19 @@ def run_trtexec(onnx_path: Path, n: int, precision: str, duration: int,
         except Exception:
             pass
 
-    return {"ok": True, "gpu_ms": float(m.group(1)), "kernel_dtypes": kernel_dtypes}
+    return {"ok": True, "gpu_ms": float(m.group(1)),
+            "kernel_dtypes": kernel_dtypes, "telemetry": phase}
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sizes", type=int, nargs="+", default=[2048])
-    ap.add_argument("--precisions", nargs="+", default=["fp32", "tf32", "fp16"])
+    ap.add_argument("--precisions", nargs="+", default=["fp32", "tf32", "fp16"],
+                    choices=list(PER_SM_CLK),
+                    help="int8 is not available here: a bare MatMul graph has "
+                         "no Q/DQ nodes, so TensorRT has no scales to quantise "
+                         "with. Measuring the INT8 ceiling needs a quantised "
+                         "ONNX (see scripts/quantize_int8.py).")
     ap.add_argument("--duration", type=int, default=15)
     ap.add_argument("--sms", type=int, default=8)
     ap.add_argument("--workspace-mb", type=int, default=1024)
@@ -191,6 +273,9 @@ def main() -> None:
                          "script only — it freezes tactic selection and biases "
                          "the measured peak downward. Never for a reported "
                          "number.")
+    ap.add_argument("--no-telemetry", action="store_true",
+                    help="skip tegrastats sampling (needs sudo); throttling "
+                         "will then go undetected")
     args = ap.parse_args()
 
     env = capture(ROOT)
@@ -221,7 +306,21 @@ def main() -> None:
     print()
 
     work = ROOT / "results" / "peak_gemm"
-    work.mkdir(parents=True, exist_ok=True)
+    # Generated ONNX files are seeded and therefore identical across runs, so
+    # they live in a shared directory rather than being regenerated per run.
+    # Their hashes are recorded in each result.json, which is what ties a run
+    # to its inputs.
+    onnx_dir = work / "onnx"
+    onnx_dir.mkdir(parents=True, exist_ok=True)
+
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    sha = env["git"]["sha_short"] or "nogit"
+    mode = env["power_mode"]["name"] or "unknown"
+    sizes_tag = "N" + "-".join(str(s) for s in args.sizes)
+    run_dir = work / f"{ts}_{sizes_tag}_{mode}_pinned_{sha}"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = (work / "gemm.cache") if args.timing_cache else None
+    print(f"run dir    {run_dir}\n")
 
     rows = []
     for n in args.sizes:
@@ -229,16 +328,16 @@ def main() -> None:
         print(f"N = {n}   ({flops/1e9:.1f} GFLOP per call)")
 
         for prec in args.precisions:
-            onnx_path = work / f"matmul_{n}_{prec}.onnx"
+            onnx_path = onnx_dir / f"matmul_{n}_{prec}.onnx"
             if not onnx_path.exists():
                 make_matmul(n, prec, onnx_path)
             onnx_sha = hashlib.sha256(onnx_path.read_bytes()).hexdigest()[:12]
             ai = n / (3 * ELEM_BYTES[prec] / 2)
 
-            r = run_trtexec(onnx_path, n, prec, args.duration, work,
-                            obey=not args.no_obey,
+            r = run_trtexec(onnx_path, n, prec, args.duration, run_dir,
+                            cache_path, obey=not args.no_obey,
                             workspace_mb=args.workspace_mb,
-                            timing_cache=args.timing_cache)
+                            telemetry=not args.no_telemetry, gpu_hz=gpu_hz)
             if not r["ok"]:
                 print(f"  {prec:>5}  FAILED  (AI ~{ai:.0f})")
                 for line in r["errors"]:
@@ -253,10 +352,21 @@ def main() -> None:
                          "arithmetic_intensity": round(ai, 1),
                          "gpu_ms": r["gpu_ms"], "tflops": round(tflops, 3),
                          "pct_of_derived": round(frac, 1),
-                         "kernel_dtypes": dts})
+                         "kernel_dtypes": dts, "telemetry": r["telemetry"]})
             print(f"  {prec:>5}  {r['gpu_ms']:8.3f} ms   {tflops:6.2f} T/s   "
                   f"{frac:5.1f}% of derived   AI ~{ai:.0f}")
             print(f"         kernel formats: {', '.join(d[:46] for d in dts)}")
+
+            t = r["telemetry"]
+            if t:
+                flag = "  THROTTLED" if t["throttled"] else ""
+                print(f"         timed region ({t['n_samples_in_window']}/"
+                      f"{t['n_samples_total']} samples): "
+                      f"{t['vdd_in_mean_mw']/1000:.2f} W mean, "
+                      f"{t['vdd_in_max_mw']/1000:.2f} W peak   "
+                      f"gpu {t['gpu_mhz_mean']:.0f}/{t['gpu_mhz_min']:.0f} MHz "
+                      f"(mean/min of {t['gpu_mhz_ceiling']:.0f})   "
+                      f"tj {t['temp_tj_max_c']:.0f}C{flag}")
         print()
 
     best = {}
@@ -312,14 +422,45 @@ def main() -> None:
                   f"  Try a larger N, check the kernel formats above, or state "
                   f"the uncertainty in the write-up.")
 
-    out = work / "peak_gemm.json"
+    sampled = [r for r in rows if r.get("telemetry")]
+    any_throttled = any(r["telemetry"]["throttled"] for r in sampled)
+    # Tri-state: with no telemetry, throttle status is unknown, not clean.
+    # Reporting False there would be absence of evidence read as evidence of
+    # absence, on exactly the workload most likely to trip the current limit.
+    throttle_status = ("unknown" if not sampled
+                       else "throttled" if any_throttled else "clean")
+
+    if not sampled and rows:
+        print("\n  NOTE: no telemetry captured, so throttle status is UNKNOWN. "
+              "A dense GEMM is\n"
+              "  the most power-hungry workload this board runs; if it was "
+              "current-limited,\n"
+              "  these figures are sustained rather than unconstrained and "
+              "there is no way\n"
+              "  to tell from this run. Re-run after `sudo -v` to find out.")
+    elif any_throttled:
+        print("\n  NOTE: at least one arm ran with the GPU clock below its "
+              "pinned ceiling.\n"
+              "  A dense GEMM is the most power-hungry workload this board "
+              "runs and can trip\n"
+              "  the current limit that a memory-bound network never "
+              "approaches. This biases\n"
+              "  attained throughput DOWNWARD, so a ceiling exceeded despite "
+              "it is exceeded\n"
+              "  a fortiori — but report these figures as sustained rather "
+              "than unconstrained.")
+
+    out = run_dir / "result.json"
     out.write_text(json.dumps(
-        {"env": env, "gpu_hz_used": gpu_hz, "derived_ceilings_tflops": theory,
+        {"captured_utc": ts, "env": env, "gpu_hz_used": gpu_hz,
+         "derived_ceilings_tflops": theory,
          "timing_cache_used": bool(args.timing_cache),
          "precision_constraints_obey": not args.no_obey,
+         "throttle_status": throttle_status,
+         "telemetry_coverage": f"{len(sampled)}/{len(rows)}",
          "runs": rows, "best_attained_tflops": best, "verdict": verdict},
         indent=2))
-    print(f"\nwrote {out}")
+    print(f"\nwrote {run_dir}")
 
 
 if __name__ == "__main__":
