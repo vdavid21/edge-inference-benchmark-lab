@@ -21,6 +21,7 @@ models/*_named.onnx
 models/mobilenetv2-12.onnx
 results/**/times_*.json
 results/bench_*.log
+results/peak_gemm/onnx/*
 data/*
 # the split file must be committed despite data/ being ignored
 !data/split_v1.json

@@ -1,0 +1,234 @@
+{
+  "captured_utc": "20260926T112839Z",
+  "env": {
+    "captured_utc": "2026-09-26T11:28:36+00:00",
+    "note": null,
+    "git": {
+      "sha": "a74615cea83bc4b90cf2caba3a623772fd0733c9",
+      "sha_short": "a74615cea83b",
+      "dirty": "only results",
+      "branch": "main"
+    },
+    "board": {
+      "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+      "l4t": "r39.2.1",
+      "l4t_raw": "# R39 (release), REVISION: 2.1, GCID: 46758480, BOARD: generic, EABI: aarch64, DATE: Fri Aug  7 05:54:22 AM UTC 2026\n# KERNEL_VARIANT: oot\nTARGET_USERSPACE_LIB_DIR=nvidia\nTARGET_USERSPACE_LIB_DIR_PATH=usr/lib/aarch64-linux-gnu/nvidia",
+      "compatible_spec": "COMPATIBLE_SPEC 3767--0005--1--jetson-orin-nano-devkit-super-",
+      "kernel": "6.8.12-1021-tegra",
+      "arch": "aarch64"
+    },
+    "software": {
+      "python": "3.12.3",
+      "tensorrt": "10.16.2.10",
+      "numpy": "2.5.3",
+      "onnx": "1.22.0",
+      "onnxruntime": "1.29.0",
+      "nvidia_modelopt": "0.46.0",
+      "torch": "2.14.0+cpu",
+      "cuda": "13.2.86",
+      "apt": {
+        "libcudnn9-cuda-13": "9.20.0.46-1",
+        "libnvinfer-bin": "10.16.2.10-1+cuda13.2",
+        "nvidia-l4t-core": "39.2.1-20260806224157"
+      }
+    },
+    "clocks": {
+      "gpu_min_hz": 918000000,
+      "gpu_max_hz": 918000000,
+      "gpu_cur_hz": 918000000,
+      "gpu_pinned": true,
+      "emc_cur_hz": null,
+      "cpu_governor": "schedutil",
+      "cpu_max_khz": 1344000,
+      "jetson_clocks_raw": "SOC family:tegra234  Machine:NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super\nError: Run this script(/usr/bin/jetson_clocks) as a root user"
+    },
+    "power_mode": {
+      "mode_id": 1,
+      "name": "25W",
+      "raw": "NV Power Mode: 25W\n1"
+    },
+    "thermal_c": {
+      "cpu-thermal": 51.06,
+      "gpu-thermal": 51.72,
+      "soc0-thermal": 50.38,
+      "soc1-thermal": 51.19,
+      "soc2-thermal": 49.78,
+      "tj-thermal": 51.72
+    },
+    "load": {
+      "loadavg_1m": 0.18408203125,
+      "loadavg_5m": 0.81103515625,
+      "loadavg_15m": 0.818359375,
+      "mem_total_kb": 7665284,
+      "mem_available_kb": 3585188
+    }
+  },
+  "gpu_hz_used": 918000000,
+  "derived_ceilings_tflops": {
+    "fp32": 1.880064,
+    "tf32": 7.520256,
+    "fp16": 15.040512
+  },
+  "timing_cache_used": false,
+  "precision_constraints_obey": true,
+  "throttle_status": "clean",
+  "telemetry_coverage": "6/6",
+  "runs": [
+    {
+      "n": 2048,
+      "precision": "fp32",
+      "onnx_sha256_12": "7e473f35149b",
+      "arithmetic_intensity": 341.3,
+      "gpu_ms": 11.4991,
+      "tflops": 1.494,
+      "pct_of_derived": 79.5,
+      "kernel_dtypes": [
+        "Float"
+      ],
+      "telemetry": {
+        "window": "last_timed_region",
+        "window_seconds": 15,
+        "n_samples_total": 158,
+        "n_samples_in_window": 69,
+        "vdd_in_mean_mw": 17144.4,
+        "vdd_in_max_mw": 17294.0,
+        "gpu_mhz_mean": 911.7,
+        "gpu_mhz_min": 911,
+        "gpu_mhz_ceiling": 918.0,
+        "temp_tj_max_c": 60.59,
+        "throttled": false
+      }
+    },
+    {
+      "n": 2048,
+      "precision": "tf32",
+      "onnx_sha256_12": "c7153f414ec3",
+      "arithmetic_intensity": 341.3,
+      "gpu_ms": 4.30176,
+      "tflops": 3.994,
+      "pct_of_derived": 53.1,
+      "kernel_dtypes": [
+        "Float"
+      ],
+      "telemetry": {
+        "window": "last_timed_region",
+        "window_seconds": 15,
+        "n_samples_total": 122,
+        "n_samples_in_window": 68,
+        "vdd_in_mean_mw": 21090.4,
+        "vdd_in_max_mw": 21567.0,
+        "gpu_mhz_mean": 913.0,
+        "gpu_mhz_min": 906,
+        "gpu_mhz_ceiling": 918.0,
+        "temp_tj_max_c": 63.44,
+        "throttled": false
+      }
+    },
+    {
+      "n": 2048,
+      "precision": "fp16",
+      "onnx_sha256_12": "5f4dc7a1d6d2",
+      "arithmetic_intensity": 682.7,
+      "gpu_ms": 1.72266,
+      "tflops": 9.973,
+      "pct_of_derived": 66.3,
+      "kernel_dtypes": [
+        "Half"
+      ],
+      "telemetry": {
+        "window": "last_timed_region",
+        "window_seconds": 15,
+        "n_samples_total": 119,
+        "n_samples_in_window": 68,
+        "vdd_in_mean_mw": 20985.2,
+        "vdd_in_max_mw": 21176.0,
+        "gpu_mhz_mean": 909.8,
+        "gpu_mhz_min": 903,
+        "gpu_mhz_ceiling": 918.0,
+        "temp_tj_max_c": 65.19,
+        "throttled": false
+      }
+    },
+    {
+      "n": 4096,
+      "precision": "fp32",
+      "onnx_sha256_12": "b02f596e529d",
+      "arithmetic_intensity": 682.7,
+      "gpu_ms": 91.74,
+      "tflops": 1.498,
+      "pct_of_derived": 79.7,
+      "kernel_dtypes": [
+        "Float"
+      ],
+      "telemetry": {
+        "window": "last_timed_region",
+        "window_seconds": 15,
+        "n_samples_total": 461,
+        "n_samples_in_window": 69,
+        "vdd_in_mean_mw": 21479.4,
+        "vdd_in_max_mw": 21686.0,
+        "gpu_mhz_mean": 910.9,
+        "gpu_mhz_min": 910,
+        "gpu_mhz_ceiling": 918.0,
+        "temp_tj_max_c": 68.34,
+        "throttled": false
+      }
+    },
+    {
+      "n": 4096,
+      "precision": "tf32",
+      "onnx_sha256_12": "c48d1fcd2ff8",
+      "arithmetic_intensity": 682.7,
+      "gpu_ms": 25.9192,
+      "tflops": 5.303,
+      "pct_of_derived": 70.5,
+      "kernel_dtypes": [
+        "Float"
+      ],
+      "telemetry": {
+        "window": "last_timed_region",
+        "window_seconds": 15,
+        "n_samples_total": 192,
+        "n_samples_in_window": 68,
+        "vdd_in_mean_mw": 22044.4,
+        "vdd_in_max_mw": 22653.0,
+        "gpu_mhz_mean": 912.6,
+        "gpu_mhz_min": 910,
+        "gpu_mhz_ceiling": 918.0,
+        "temp_tj_max_c": 69.0,
+        "throttled": false
+      }
+    },
+    {
+      "n": 4096,
+      "precision": "fp16",
+      "onnx_sha256_12": "00464f365a11",
+      "arithmetic_intensity": 1365.3,
+      "gpu_ms": 13.1108,
+      "tflops": 10.483,
+      "pct_of_derived": 69.7,
+      "kernel_dtypes": [
+        "Half"
+      ],
+      "telemetry": {
+        "window": "last_timed_region",
+        "window_seconds": 15,
+        "n_samples_total": 144,
+        "n_samples_in_window": 67,
+        "vdd_in_mean_mw": 21735.1,
+        "vdd_in_max_mw": 22033.0,
+        "gpu_mhz_mean": 913.1,
+        "gpu_mhz_min": 907,
+        "gpu_mhz_ceiling": 918.0,
+        "temp_tj_max_c": 68.97,
+        "throttled": false
+      }
+    }
+  ],
+  "best_attained_tflops": {
+    "fp32": 1.498,
+    "tf32": 5.303,
+    "fp16": 10.483
+  },
+  "verdict": "no_penalty"
+}

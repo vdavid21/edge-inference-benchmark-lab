@@ -1,0 +1,22 @@
+{"Layers": [{
+  "Name": "node_of_Y_myl0_0",
+  "LayerType": "gemm",
+  "Inputs": [
+  {
+    "Name": "A",
+    "Dimensions": [4096,4096],
+    "Format/Datatype": "Half"
+  }],
+  "Outputs": [
+  {
+    "Name": "Y",
+    "Dimensions": [4096,4096],
+    "Format/Datatype": "Half"
+  }],
+  "TacticName": "sm80_xmma_gemm_f16f16_f16f16_f16_nn_n_tilesize128x256x32_stage3_warpsize2x4x1_tensor16x8x16",
+  "StreamId": 0,
+  "Metadata": "[ONNX Layer: node_of_Y]"
+}],
+"Bindings": ["A"
+,"Y"
+]}
