@@ -2,15 +2,15 @@
 
 Measuring what precision reduction actually buys you on an NVIDIA Jetson Orin Nano.
 
-FP32, TF32, FP16 and INT8 inference of the same model, on the same board, with pinned clocks, percentile latencies, and accuracy measured on a fixed, disjoint evaluation split. The goal is a reusable harness, not a one-off number.
+FP32, TF32, FP16 and INT8 inference of the same model, on the same board, with pinned clocks, percentile latencies, accuracy on a fixed disjoint split, energy per frame from the onboard rails and a wall meter, and a per-layer roofline.
 
-**Status: early, in progress.** Latency and accuracy are measured for four precisions. Energy, thermals and per-layer analysis are not done yet. Numbers below are real and reproducible; the conclusions are provisional.
+**Article:** davidvincze.com/posts/edge-inference-benchmark-lab/
 
 ---
 
-## Headline result
+## Results
 
-Same model, same board, same measurement method. Batch 1, CUDA graphs enabled, clocks pinned, 25 W power mode.
+Batch 1, CUDA graphs enabled, clocks pinned, 25 W power mode.
 
 | Precision | Latency p50 | p99 | Throughput | Top-1 | Δ Top-1 | Engine | Activation mem |
 |---|---|---|---|---|---|---|---|
@@ -19,112 +19,85 @@ Same model, same board, same measurement method. Batch 1, CUDA graphs enabled, c
 | FP16 | 0.795 ms | 0.812 ms | 1327 qps | 58.59% | −0.02 | 7.35 MB | 3.51 MB |
 | INT8 | 0.626 ms | 0.633 ms | 1712 qps | 57.83% | −0.78 | 5.68 MB | 1.83 MB |
 
-Accuracy is top-1 on 9000 ImageNetV2 images, 95% CI ±1.02%.
+Top-1 on 9000 ImageNetV2 images, 95% CI ±1.02%. The Tensor Cores offer 4× the FP32 arithmetic rate at TF32, 8× at FP16 and 16× at INT8, but the fraction realised falls as precision drops: 34%, 29%, 19%. Sixteen times the arithmetic buys three times the inference rate, because the arithmetic was never the bottleneck.
 
-**The gap between theory and measurement:**
+### Energy per frame, DVFS, by power mode
 
-| | FP32 | TF32 | FP16 | INT8 |
-|---|---|---|---|---|
-| Theoretical peak vs FP32 | 1× | 4× | 8× | 16× |
-| Measured speedup | 1.00× | 1.36× | 2.32× | 2.99× |
-| **Fraction realised** | — | **34%** | **29%** | **19%** |
+| Mode | GPU max | FP16 | INT8 |
+|---|---:|---:|---:|
+| 15 W | 612 MHz | **10.10 mJ** | 6.73 mJ |
+| 25 W | 918 MHz | 10.75 mJ | **6.53 mJ** |
+| MAXN_SUPER | 1020 MHz | 10.90 mJ | 6.58 mJ |
 
-Measured speedup is throughput relative to FP32, in the same CUDA-graph configuration as the table above.
+Measured on the board's input rail; idle baseline 3.52 W, all six runs starting at 46–47 °C.
 
-Sixteen times the arithmetic throughput delivers 2.99× the inference rate, and the fraction realised *falls* as precision drops. MobileNetV2's depthwise convolutions sit far inside the memory-bound region of the roofline — the arithmetic was never the bottleneck.
+**The optimal power mode is a property of the board and the precision together, not of the board alone.** FP16 is most efficient at 15 W — 62% of MAXN's throughput for 57% of its power. INT8 inverts it and wants 25 W: it has already cut dynamic power by 39%, so the 3.5 W static baseline dominates, and stretching a frame from 0.65 ms to 0.88 ms costs more than the lower clock saves. Deploying INT8 at the power mode that was optimal for FP16 is the wrong call.
 
-Two checks rule out the easy explanations for INT8's modest 1.29× over FP16. Coverage is near-total (54 of 57 output tensors are INT8), and layout-conversion overhead is negligible (2 reformat layers versus FP16's 1). What remains is memory bandwidth and the fixed costs that don't scale with precision.
+### Three more
 
-## Other findings so far
+**Every layer is memory-bound except in FP32.** FP32 is the only precision with compute-bound layers — sixteen pointwise convolutions, 44% of the FLOPs in 27% of the runtime. Engaging the Tensor Cores moves the ridge past the entire workload and it never comes back, which is why FP32 → TF32 buys 1.30× and every later step tracks traffic instead. → [roofline](results/profiles/summary-276801ac2b6a.md)
 
-**FP32 is ambiguous and the ambiguity is worth 1.36×.** TensorRT enables TF32 on Ampere by default, so an unflagged "FP32" baseline is silently running reduced-precision math on Tensor Cores. Which baseline you pick moves your headline speedup by 36%.
+**An unflagged FP32 baseline is worth 1.36×.** TensorRT enables TF32 on Ampere by default, so "FP32" without `--noTF32` is silently reduced-precision math on Tensor Cores. → [latency](results/run/20260920T102737Z_bff3273/summary.md)
 
-**CUDA Graphs are worth more than a precision step.** Collapsing the engine into a single submission gave 1.11× at FP32, rising to 1.31× at INT8 — more than the 1.29× that FP16→INT8 buys. And at FP16, 21% of what `trtexec` reports as "GPU Compute Time" without graphs turns out to be launch bubbles between kernels rather than computation; the same comparison gives 10% at FP32, 14% at TF32 and 23% at INT8, so the effect grows as the kernels get shorter.
+**Depthwise convolutions cost 8× more per FLOP than pointwise**, carrying 6.9% of the arithmetic in 32% of the runtime. The operation that makes MobileNet cheap in multiplications returns a third of that saving as memory traffic. → [roofline](results/profiles/summary-276801ac2b6a.md)
 
-**Spin-wait is a host-side knob only.** Adding `--useSpinWait` on top of CUDA graphs (measured at TF32) cut enqueue median 35%, from 9.8 µs to 6.3 µs, while GPU compute median stayed bit-identical at 1.283 ms. End to end it moved p50 by 0.5% and throughput by 0.06% — once graphs have removed the launch overhead, there is nothing left for it to recover.
+## Measurements
 
-**Precision changes which algorithm gets selected.** At FP16, TensorRT uses GEMM kernels for 18 of the 1×1 pointwise convolutions. At INT8 it uses direct convolution for all 52 — the autotuner abandoned the GEMM formulation entirely.
+| Campaign | What it establishes | Data |
+|---|---|---|
+| Latency, FP32/TF32/FP16 | Build commands, percentile latencies, CUDA Graph and spin-wait arms | [summary](results/run/20260919T211117Z_7eb0b09/summary.md) |
+| Latency + accuracy, INT8 | Quantisation, the four-precision tables, ImageNetV2 evaluation | [summary](results/run/20260920T102737Z_bff3273/summary.md) |
+| Energy, pinned vs unpinned | Clock policy against mJ/frame, rail and wall power | [summary](results/energy/summary-e3e0867e26c9.md) |
+| Energy, 15 W / 25 W / MAXN_SUPER | Energy per frame across power modes, FP16 and INT8 | [summary](results/energy/summary-6fc2633c8be2.md) |
+| Per-layer roofline | Arithmetic intensity, ridge, achieved bandwidth, ten runs across four precisions | [summary](results/profiles/summary-276801ac2b6a.md) |
+| Measured arithmetic ceiling | GEMM peak, FP32-accumulate question | [summary](results/peak_gemm/summary-a74615cea83b.md) |
+
+Each summary carries the commands that produced it, the raw logs and the interpretation. Every result traces to a git SHA, an engine hash and a split fingerprint — `calib 1000 214e64efb5dc5f8f`, `eval 9000 ecdf27521cf9967e`. If `python scripts/make_split.py` prints anything else, the data changed and the numbers are not comparable.
 
 ## Platform
 
 | | |
 |---|---|
 | Board | Jetson Orin Nano 8 GB Developer Kit (P3767-0005, Tegra234, sm_87) |
-| JetPack | 7.2.1 — L4T r39.2.0, Ubuntu 24.04, kernel 6.8.12-tegra |
+| JetPack | 7.2.1 — L4T r39.2.1, Ubuntu 24.04, kernel 6.8.12-tegra |
 | CUDA / TensorRT / cuDNN | 13.2.86 / 10.16.2.10 / 9.20.0.46 |
 | Python | 3.12.3 |
 | Power mode | 25 W (GPU 918 MHz, EMC 3199 MHz = 102 GB/s), `jetson_clocks` applied |
-| Quantisation | NVIDIA TensorRT Model Optimizer 0.46.0, explicit Q/DQ, entropy calibration |
+| Quantisation | NVIDIA Model Optimizer 0.46.0, explicit Q/DQ, entropy calibration, 512 images |
+| Power meter | WM03-DE, ±2%, between the PSU and the socket |
 
 Model: `mobilenetv2-12.onnx` from the ONNX model zoo, opset 12, batch 1, 224×224.
 
-## Reproducing
-
-```bash
-# environment report — capture before anything else
-bash scripts/00_env_report.sh | tee docs/env/$(date -u +%Y%m%dT%H%M%SZ).md
-
-# data (1.26 GB, not in this repo)
-mkdir -p data && cd data
-wget https://huggingface.co/datasets/vaishaal/ImageNetV2/resolve/main/imagenetv2-matched-frequency.tar.gz
-tar xf imagenetv2-matched-frequency.tar.gz && cd ..
-
-# split — must print the fingerprints below
-python scripts/make_split.py
-#   calib  1000  214e64efb5dc5f8f
-#   eval   9000  ecdf27521cf9967e
-
-# build and benchmark
-sudo nvpmodel -m <25W mode id> && sudo jetson_clocks
-bash scripts/build_all.sh
-
-# accuracy
-python scripts/eval_onnx.py                              # ORT CPU reference
-python scripts/eval_trt.py models/mobilenetv2_fp32.plan
-```
-
-Every result should be traceable to a git SHA, an engine hash, and a split fingerprint. If a fingerprint doesn't match, the data changed and the numbers aren't comparable.
-
+Environment captures are in [`docs/env/`](docs/env/) — including the [mismatched one](docs/env/env-jetson-orin-20260904T174022Z-pre-firmware-misdetected.md), where the installer had capped the board at 624 MHz with 15W power mode. Please refer to the [updated one](docs/env/env-jetson-orin-20260919T113300Z.md).
 ## Layout
 
 ```
-framecost/     # the harness: preprocessing, TensorRT runner, telemetry
-scripts/       # entry points: env report, split, quantise, build, evaluate
-docs/          # ramp-up notes, methodology, environment captures, backlog
-models/        # ONNX and .plan files (gitignored — build artifacts)
-data/          # dataset (gitignored); split_v1.json is committed
-results/       # logs and exported traces
+framecost/     the harness
+  env.py         environment capture, git provenance, suitability checks
+  preprocess.py  PIL path, matched to the torchvision reference
+  trt_runner.py  TensorRT execution
+  telemetry.py   tegrastats sampler, energy accounting
+  roofline.py    per-layer FLOPs, bytes, arithmetic intensity, the plot
+
+scripts/       entry points
+  00_env_report.sh   environment report
+  make_split.py      fixed calibration / evaluation split
+  quantize_int8.py   explicit Q/DQ via ModelOpt PTQ
+  eval_onnx.py       ONNX Runtime CPU accuracy reference
+  eval_trt.py        TensorRT accuracy
+  measure_energy.py  energy per frame under telemetry
+  profile_model.py   per-layer profile and roofline
+  peak_gemm.py       measured arithmetic ceiling
+
+results/       one directory per run, plus a summary per campaign
+docs/env/      environment captures
+models/        ONNX and .plan files (gitignored except the quantised ONNX)
+data/          dataset (gitignored); split_v1.json is committed
 ```
-
-## Caveats
-
-**ImageNetV2, not ImageNet val.** Absolute accuracy runs ~13 points below published ImageNet validation figures because ImageNetV2 is a deliberately harder set. All comparisons here are deltas on one fixed split, which is what
-the question requires, but don't compare these absolute numbers to a paper.
-
-**The INT8 accuracy drop is not yet statistically established.** 0.78 points sits inside the ±1.02% confidence interval. Because both arms use identical images, a paired test (McNemar's) is the right instrument and hasn't been run yet.
-
-**Isolated inference latency, not pipeline latency.** In a Python evaluation loop dominated by JPEG decode and preprocessing, the 2.32× FP16 speedup showed up as 8% end to end — 109 s to 101 s over the same 9000 images.
-
-**One board, one unit.** Nothing here establishes part-to-part variation.
-
-**Super mode required a firmware update.** The JetPack 7.2 installer misdetects the Orin Nano Developer Kit and omits the 25 W and MAXN SUPER power profiles, capping the board at 15 W / 624 MHz / 68 GB/s. Editing nvpmodel config does not fix it — the clock ceilings come from the bootloader. Check your actual clocks rather than trusting
-`nvpmodel -q`.
-
-## Not done yet
-
-- Energy per inference (mJ/frame) and the 7 W / 15 W / 25 W power sweep
-- Sustained thermal behaviour and throttling
-- The effect of `jetson_clocks` on compute and enqueue time — every run here was made with clocks already pinned, so there is no unpinned baseline to compare against
-- Kernel-level tracing: launch counts per engine and direct attribution of the launch gaps
-- Per-layer profiling and the roofline scatter plot
-- Calibration method and calibration-set-size sweep
-- McNemar's paired significance test
-- A second model (ResNet-18 for contrast, YOLO for detection)
-- 2:4 structured sparsity
 
 ## Background
 
-Built alongside MIT 6.5940 *TinyML and Efficient Deep Learning* (Fall 2024). The course covers the accuracy side of quantisation with simulated arithmetic; this repo is the performance side, with kernels that actually execute in INT8.
+Built alongside MIT 6.5940 *TinyML and Efficient Deep Learning*. The course covers the accuracy side of quantisation with simulated arithmetic; this repo is the performance side, with kernels that actually execute in INT8.
 
 ## Licence
 
